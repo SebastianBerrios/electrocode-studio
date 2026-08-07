@@ -41,11 +41,13 @@ export function Authority({ locale }: { locale: Locale }) {
   return (
     <section id="autoridad" className="py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="reveal md:grid md:grid-cols-[1fr_1.4fr] md:gap-12">
-          <h2 className="text-3xl font-medium tracking-tight md:text-5xl">
-            {authority.heading}
-          </h2>
-          <p className="mt-4 max-w-xl text-sm text-muted-foreground md:mt-2">
+        {/* Centred stack, not the previous `[1fr_1.4fr]` two-column header:
+            the green restyle sets every section heading on the page centre,
+            so a heading/intro pair split across two columns was the one
+            layout still reading as the old left-weighted editorial rhythm. */}
+        <div className="reveal mx-auto max-w-3xl text-center">
+          <h2 className="text-4xl md:text-6xl">{authority.heading}</h2>
+          <p className="mt-5 text-base text-muted-foreground">
             {authority.intro}
           </p>
         </div>

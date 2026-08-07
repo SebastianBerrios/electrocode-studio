@@ -36,7 +36,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
   return (
     <section id="proyectos" className="py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="reveal max-w-xl text-3xl font-medium tracking-tight md:text-5xl">
+        <h2 className="reveal mx-auto max-w-3xl text-center text-4xl md:text-6xl">
           {portfolio.heading}
         </h2>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

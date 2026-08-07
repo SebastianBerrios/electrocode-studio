@@ -52,11 +52,11 @@ export function PricingSummary({ locale }: { locale: Locale }) {
   return (
     <section id="precios" className="py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="reveal md:grid md:grid-cols-[1fr_1.4fr] md:gap-12">
-          <h2 className="text-3xl font-medium tracking-tight md:text-5xl">
-            {pricingSummary.heading}
-          </h2>
-          <p className="mt-4 max-w-xl text-sm text-muted-foreground md:mt-2">
+        {/* See `authority.tsx` for why the two-column header became a
+            centred stack in the green restyle. */}
+        <div className="reveal mx-auto max-w-3xl text-center">
+          <h2 className="text-4xl md:text-6xl">{pricingSummary.heading}</h2>
+          <p className="mt-5 text-base text-muted-foreground">
             {pricingSummary.intro}
           </p>
         </div>

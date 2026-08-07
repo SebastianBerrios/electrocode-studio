@@ -73,7 +73,7 @@ export function Process({ locale }: { locale: Locale }) {
   return (
     <section id="proceso" className="py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="reveal font-display text-3xl font-medium md:text-5xl">
+        <h2 className="reveal mx-auto max-w-3xl text-center font-display text-4xl md:text-6xl">
           {process.heading}
         </h2>
         <div className="mt-10">
