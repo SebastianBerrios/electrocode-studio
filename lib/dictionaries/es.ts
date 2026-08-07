@@ -7,11 +7,21 @@
 import type { Dictionary } from "./types";
 
 export const es: Dictionary = {
+  // The number between `prefix` and `suffix` is `LAUNCH_PRICING_SLOTS`
+  // (`lib/content/pricing.ts`), rendered by the component — not written here.
+  // Same split as `pricing.launchNote*` below, which wraps the same figure.
+  announcement: {
+    prefix: "Precios de lanzamiento para los primeros",
+    suffix: "proyectos del estudio",
+    linkLabel: "Ver precios",
+  },
   header: {
     brand: "ElectroCode Studio",
     projectsLink: "Proyectos",
     pricingLink: "Precios",
     whatsappLink: "WhatsApp",
+    logoAlt: "ElectroCode",
+    briefCta: "Cuéntanos tu proyecto",
     skipToContentLabel: "Saltar al contenido principal",
   },
   footer: {
@@ -20,12 +30,24 @@ export const es: Dictionary = {
     projectsLink: "Proyectos",
     pricingLink: "Precios",
     whatsappLink: "WhatsApp",
+    logoAlt: "ElectroCode",
+    servicesHeading: "Servicios",
+    studioHeading: "El estudio",
+    contactHeading: "Contacto",
+    processLink: "Proceso",
+    retainerLink: "Mantenimiento",
+    briefLink: "Cuéntanos tu proyecto",
+    copyright: "© {year} ElectroCode Studio",
   },
   hero: {
-    heading: ["Tu proyecto es único,", "tu web también"],
+    // Same sentence as before the restyle, only re-split so the accent falls
+    // on its natural punchline. "también" is what the line actually turns on,
+    // so it is the word that carries the colour.
+    heading: { lead: "Tu proyecto es único, tu web", accent: "también" },
     subtitle:
       "Tu negocio merece más que una plantilla aburrida. Diseñamos webs únicas, flexibles y listas para atraer clientes. Tú pones la idea, nosotros la magia.",
-    cta: "Explora nuestros proyectos",
+    primaryCta: "Cuéntanos tu proyecto",
+    secondaryCta: "Explora nuestros proyectos",
   },
   services: {
     heading: "Servicios",
@@ -40,6 +62,47 @@ export const es: Dictionary = {
     approvalDeadlinePrefix: "Tienes",
     approvalDeadlineSuffix:
       "días hábiles para aprobar una fase pendiente de tu revisión; pasado ese plazo, el proyecto se pausa y la fecha de entrega se recalcula.",
+  },
+  // Every card below restates a commitment already held as data elsewhere in
+  // the repo — see `WayOfWorkingDictionary`'s doc comment for the key-by-key
+  // provenance. No card may claim speed, quality, or scale.
+  wayOfWorking: {
+    heading: "Cómo trabajamos",
+    intro:
+      "Lo que puedes esperar del estudio antes de empezar, escrito antes de empezar.",
+    publishedPrice: {
+      title: "Precio publicado",
+      body: "Cada línea de servicio tiene un precio de referencia visible en la web. No hay que pedir una cotización para saber en qué rango estás.",
+    },
+    noMiddlemen: {
+      title: "Sin intermediarios",
+      body: "Cada proyecto lo desarrolla directamente el estudio. Hablas con quien construye tu sitio, no con una capa comercial.",
+    },
+    approvalGates: {
+      title: "Avanzas cuando apruebas",
+      body: "Las fases que requieren tu visto bueno no avanzan sin él. El proyecto no se mueve a tus espaldas.",
+    },
+    revisionRounds: {
+      title: "Rondas de revisión incluidas",
+      bodyPrefix: "Cada proyecto incluye",
+      bodySuffix:
+        "rondas de revisión durante el desarrollo, contadas desde el principio. Las adicionales se cotizan aparte, sin sorpresas.",
+    },
+    itemizedScope: {
+      title: "Alcance itemizado",
+      body: "Lo que incluye y lo que no incluye cada plan está escrito y publicado. El límite se acuerda antes, no se discute después.",
+    },
+    noLockIn: {
+      title: "Sin permanencia",
+      body: "Un proyecto puntual termina al completarse la entrega acordada. El plan de mantenimiento se cancela con 30 días de aviso, sin penalidad.",
+    },
+  },
+  // Framing only. The heading, questions and answers all come from
+  // `pricing.faq` below, rendered through the same component the pricing page
+  // uses — nothing about the FAQ's content is restated here.
+  landingFaq: {
+    intro:
+      "Las dudas que aparecen antes de contratar, respondidas aquí y en la página de precios.",
   },
   portfolio: {
     heading: "Proyectos",

@@ -9,11 +9,29 @@
  */
 
 export type HeroDictionary = {
-  /** The hero heading, as its two rendered lines (see hero-parallax.tsx's
-   * original markup: a `<br />` between them). */
-  readonly heading: readonly [string, string];
+  /**
+   * The hero heading, split at its accented word.
+   *
+   * The reference direction's hero sets the whole heading in the ink colour
+   * except for a single closing word in the accent green — that one word IS
+   * the composition. Modelling it as `lead` + `accent` makes the pattern
+   * structural: the accent can only ever close the heading, and no call site
+   * can drift into painting three scattered words or none at all.
+   *
+   * This replaces the previous two-line tuple, which existed because the
+   * older editorial heading rendered as two deliberate lines. The heading is
+   * now centred and wraps naturally at whatever width the viewport gives it,
+   * so a hardcoded line split had nothing left to describe.
+   */
+  readonly heading: {
+    readonly lead: string;
+    readonly accent: string;
+  };
   readonly subtitle: string;
-  readonly cta: string;
+  /** Filled CTA — the conversion path, targeting the landing's `#brief`. */
+  readonly primaryCta: string;
+  /** Outline CTA — the proof path, targeting the landing's `#proyectos`. */
+  readonly secondaryCta: string;
 };
 
 /**
@@ -27,6 +45,20 @@ export type SiteHeaderDictionary = {
   readonly pricingLink: string;
   readonly whatsappLink: string;
   /**
+   * Alt text for the brand mark now rendered in the header bar. The mark
+   * sits next to the `brand` wordmark, so it is decorative-adjacent — but
+   * the pair together forms the site's home link, and an unlabelled image
+   * inside a link is the one case where alt text is load-bearing.
+   */
+  readonly logoAlt: string;
+  /**
+   * Label for the header's secondary (outline) CTA, targeting the landing's
+   * `#brief` section. The reference direction pairs a quiet outline CTA with
+   * a filled one in the bar; here the outline is the form and the fill is
+   * WhatsApp, matching which of the two this studio actually prefers.
+   */
+  readonly briefCta: string;
+  /**
    * Skip-link label, rendered by `app/[locale]/layout.tsx` (finding W8 — no
    * page had a `<main>` landmark or a skip link, so a keyboard/screen-reader
    * visitor had to traverse the header and hero on every page). Grouped
@@ -37,11 +69,38 @@ export type SiteHeaderDictionary = {
 };
 
 /**
+ * Site chrome — the announcement bar above the header
+ * (`components/layout/announcement-banner.tsx`).
+ *
+ * The reference direction opens every page with a slim, full-width bar
+ * carrying one promotional line. This one carries the ONE promotional fact
+ * this studio actually has on record: launch pricing, limited to the first
+ * `LAUNCH_PRICING_SLOTS` projects (`lib/content/pricing.ts`). The count is a
+ * domain fact and is NOT stored here — `prefix`/`suffix` wrap it, the same
+ * prefix/suffix pattern `pricing.launchNote*` already uses for the same
+ * number on the pricing page. Nothing in this bar may state an offer,
+ * deadline, or discount that is not sourced from `lib/content/**`.
+ */
+export type AnnouncementDictionary = {
+  readonly prefix: string;
+  readonly suffix: string;
+  readonly linkLabel: string;
+};
+
+/**
  * Site chrome — `components/layout/site-footer.tsx`. `brand`/`projectsLink`/
  * `whatsappLink` currently repeat `header`'s values; kept as separate keys
  * (rather than shared with `header`) because the header and footer are
  * independent components and either copy may diverge later without forcing
  * a shared-type refactor.
+ *
+ * **Column headings, added by the green restyle**: the footer grew from a
+ * single row into the reference direction's multi-column sitemap. It has
+ * THREE columns, not the reference's four — there is deliberately no
+ * "Recursos" column, because this site has no blog, glossary, or calculator
+ * to put in one. Column headings only; the service-line names inside the
+ * `services` column come from `SERVICE_LINES` (`lib/content/
+ * service-lines.ts`), never restated here.
  */
 export type SiteFooterDictionary = {
   readonly brand: string;
@@ -49,6 +108,15 @@ export type SiteFooterDictionary = {
   readonly projectsLink: string;
   readonly pricingLink: string;
   readonly whatsappLink: string;
+  readonly logoAlt: string;
+  readonly servicesHeading: string;
+  readonly studioHeading: string;
+  readonly contactHeading: string;
+  readonly processLink: string;
+  readonly retainerLink: string;
+  readonly briefLink: string;
+  /** `{year}` is substituted at render time with the build year. */
+  readonly copyright: string;
 };
 
 /**
@@ -93,6 +161,71 @@ export type ProcessDictionary = {
   readonly revisionsExtra: string;
   readonly approvalDeadlinePrefix: string;
   readonly approvalDeadlineSuffix: string;
+};
+
+/**
+ * One card in the "Cómo trabajamos" grid (`components/sections/
+ * way-of-working.tsx`), added by the green restyle.
+ */
+export type WayOfWorkingItem = {
+  readonly title: string;
+  readonly body: string;
+};
+
+/**
+ * Landing section 3b, "Cómo trabajamos" — the reference direction's
+ * six-card "why work with us" grid.
+ *
+ * **Every card restates a commitment this repo already holds as data.** That
+ * is the whole constraint on this section, and it is not a soft one: a
+ * benefits grid is the easiest place on a site to publish six pleasant
+ * sentences nobody can check. Each key below is traceable:
+ *
+ * - `publishedPrice`  -> `PRICES` / `pricing.introBody` (every line has a
+ *                        published reference figure)
+ * - `noMiddlemen`     -> `pricing.faq.priceReasonAnswer` ("sin intermediarios")
+ * - `approvalGates`   -> `PROCESS.phases[].requiresApproval`
+ * - `revisionRounds`  -> `PROCESS.revisionRoundsIncluded` (the figure is
+ *                        rendered from that constant, not written here —
+ *                        hence the prefix/suffix split)
+ * - `itemizedScope`   -> the `notIncluded` / `excludedScope` fields that
+ *                        already exist on every tier and on the retainer
+ * - `noLockIn`        -> `pricing.faq.howToLeaveAnswer` +
+ *                        `RETAINER_COMMITMENTS.cancellationTerms`
+ *
+ * Do not add a seventh card for a quality, speed, or scale claim: none of
+ * those exist as facts anywhere in `lib/content/**`, and this section is
+ * exactly where one would look plausible.
+ */
+export type WayOfWorkingDictionary = {
+  readonly heading: string;
+  readonly intro: string;
+  readonly publishedPrice: WayOfWorkingItem;
+  readonly noMiddlemen: WayOfWorkingItem;
+  readonly approvalGates: WayOfWorkingItem;
+  /** Wraps `PROCESS.revisionRoundsIncluded`, same prefix/suffix pattern as
+   *  `process.revisionsLabel` and the announcement bar. */
+  readonly revisionRounds: {
+    readonly title: string;
+    readonly bodyPrefix: string;
+    readonly bodySuffix: string;
+  };
+  readonly itemizedScope: WayOfWorkingItem;
+  readonly noLockIn: WayOfWorkingItem;
+};
+
+/**
+ * Landing section 7b — the landing's FAQ block.
+ *
+ * Holds NO questions or answers of its own — and no heading either. Both the
+ * entries and the block heading come from `pricing.faq`, rendered through the
+ * same `components/pricing/faq.tsx` the pricing page uses, so the two pages
+ * can never drift into answering the same objection differently or naming the
+ * block differently. This type carries only the one string the landing adds
+ * on top: its framing line.
+ */
+export type LandingFaqDictionary = {
+  readonly intro: string;
 };
 
 /**
@@ -289,11 +422,14 @@ export type GraciasDictionary = {
 };
 
 export type Dictionary = {
+  readonly announcement: AnnouncementDictionary;
   readonly header: SiteHeaderDictionary;
   readonly footer: SiteFooterDictionary;
   readonly hero: HeroDictionary;
   readonly services: ServicesDictionary;
   readonly process: ProcessDictionary;
+  readonly wayOfWorking: WayOfWorkingDictionary;
+  readonly landingFaq: LandingFaqDictionary;
   readonly portfolio: PortfolioDictionary;
   readonly authority: AuthorityDictionary;
   readonly retainer: RetainerDictionary;

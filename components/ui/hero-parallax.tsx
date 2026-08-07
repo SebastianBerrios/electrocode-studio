@@ -129,7 +129,19 @@ export const HeroParallax = ({
   //
   // Found by looking at the rendered page. The build passed, every gate passed,
   // and the compiled HTML was correct — the defect was purely spatial.
-  const entranceLift = secondRow.length > 0 ? -700 : -260;
+  // Single-row lift reduced from -260 to -110 by the green restyle. Now that
+  // the track is in flow beneath a CENTRED hero (see the `className` note
+  // below), the lift no longer travels up past a left-aligned heading into
+  // empty space — it travels straight into the hero's own CTA buttons. At
+  // -260 on a 390px viewport the card imagery sat directly behind both
+  // buttons at scroll 0, which is the first thing a phone visitor sees.
+  // The buttons stay legible (the hero header is `position: relative`, so it
+  // paints above this unpositioned track), but "legible over clutter" is not
+  // the bar. -110 keeps the settling gesture and clears the buttons.
+  //
+  // The two-row -700 is untouched: with two rows the lower row fills the
+  // space the lift opens, which is the case that value was chosen for.
+  const entranceLift = secondRow.length > 0 ? -700 : -110;
   const translateY = useSpring(
     useTransform(scrollYProgress, [0, 0.2], [entranceLift, 50]),
     springConfig,
@@ -142,31 +154,34 @@ export const HeroParallax = ({
       {header}
       <motion.div
         id={productsId}
-        // With a single row the card track is purely decorative: the entrance
-        // lifts it up behind the heading, and a transform moves an element
-        // VISUALLY without releasing its layout box. Measured in the browser,
-        // that abandoned box left 840px of empty page between the heading and
-        // the Servicios section — more than a full viewport of nothing before
-        // a visitor reaches what the studio sells.
+        // The track is always in flow, at both row counts.
         //
-        // Taking it out of flow is the honest fix: a decorative layer should
-        // not reserve space. With two rows the track is the section's real
-        // content and stays in flow.
+        // History, because this line has been wrong twice in opposite
+        // directions. The entrance translates the track upward, and a
+        // transform moves an element VISUALLY without releasing its layout
+        // box — so with the original `entranceLift` of -700 the single-row
+        // case left 840px of measured empty page between the heading and the
+        // Servicios section. That was first "fixed" by shrinking the
+        // transform (changed nothing — the problem was the abandoned box, not
+        // the transform's size), then by pulling the track out of flow
+        // entirely with `absolute inset-x-0 top-0 -z-10`.
         //
-        // Only visible by looking at the rendered page. Every gate passed, the
-        // compiled HTML was correct, and an earlier attempt to fix this by
-        // shrinking the transform changed nothing — because the problem was
-        // never the transform's size, it was the box it left behind.
-        // `-z-10` rather than `pointer-events-none`: the cards are real links
-        // to live client sites, so disabling them to fix a layout problem
-        // would trade one defect for another. Sending the layer behind keeps
-        // the heading and its CTA clickable while the cards stay reachable
-        // wherever they are not covered.
-        className={
-          secondRow.length > 0
-            ? undefined
-            : "absolute inset-x-0 top-0 -z-10"
-        }
+        // Out-of-flow was the right fix for the LEFT-ALIGNED editorial hero it
+        // was written for: the track sat behind a heading that occupied only
+        // the left half of the page. The green restyle centres the hero, and
+        // the same absolute layer then rendered rotated client cards directly
+        // behind the centred heading and poking out above it into the header
+        // bar — visible clutter, not background texture.
+        //
+        // In flow it is instead what the reference direction actually does:
+        // hero copy, then a wide visual band beneath it. The 840px hole does
+        // not come back, because `entranceLift` is already scaled to the row
+        // count (-260 for one row) and the box a single row reserves is the
+        // card height it is actually filled with.
+        //
+        // Only visible by looking at the rendered page. Every gate passed and
+        // the compiled HTML was correct in all three versions.
+        className={undefined}
         style={
           // Resting values match this spring set's own settled endpoints
           // (scrollYProgress = 1: rotateX 0, rotateZ 0, opacity 1,
