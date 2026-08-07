@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { LOCALES, assertLocale } from "@/lib/content/locales";
 import { assertContentInvariants } from "@/lib/content/invariants";
 import { getDictionary } from "@/lib/dictionaries";
+import { AnnouncementBanner } from "@/components/layout/announcement-banner";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -63,6 +64,14 @@ export default async function LocaleLayout({
       >
         {header.skipToContentLabel}
       </a>
+      {/*
+        Above the header, and outside it: the banner scrolls away while the
+        header itself is `sticky`. Putting it inside the sticky element would
+        permanently cost a line of viewport height on every scroll — see
+        `components/layout/announcement-banner.tsx` for why it is also not
+        dismissible.
+      */}
+      <AnnouncementBanner locale={validLocale} />
       <SiteHeader locale={validLocale} />
       {children}
       <SiteFooter locale={validLocale} />
