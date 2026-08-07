@@ -24,7 +24,29 @@ import type { Locale } from "@/lib/content/locales";
  * the one block heading at the wrong level. Raised to `<h2>` to match its
  * siblings; nothing nests under it (`<details>/<summary>` are not headings).
  */
-export function Faq({ locale }: { locale: Locale }) {
+export function Faq({
+  locale,
+  headingClassName = "text-2xl font-medium text-card-foreground md:text-3xl",
+  headingId,
+  intro,
+}: {
+  locale: Locale;
+  /**
+   * Overridable so the landing can render the same block under its own
+   * centred section-heading scale (`components/sections/faq-section.tsx`)
+   * without this component learning about page layouts. Defaults to the
+   * pricing page's original classes, so that call site is unchanged.
+   */
+  headingClassName?: string;
+  /** Set when a caller needs to reference this heading from `aria-labelledby`. */
+  headingId?: string;
+  /**
+   * Optional framing paragraph rendered between the heading and the
+   * questions. The landing supplies one; the pricing page does not, because
+   * there the block already sits under the page's own pricing narrative.
+   */
+  intro?: string;
+}) {
   const { faq } = getDictionary(locale).pricing;
 
   const entries: readonly [string, string][] = [
@@ -36,9 +58,14 @@ export function Faq({ locale }: { locale: Locale }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-medium text-card-foreground md:text-3xl">
+      <h2 id={headingId} className={headingClassName}>
         {faq.heading}
       </h2>
+      {intro ? (
+        <p className="mx-auto mt-5 max-w-2xl text-center text-base text-muted-foreground">
+          {intro}
+        </p>
+      ) : null}
       <div className="mt-6 divide-y divide-border rounded-2xl border border-border bg-card">
         {entries.map(([question, answer]) => (
           <details key={question} className="group p-5">

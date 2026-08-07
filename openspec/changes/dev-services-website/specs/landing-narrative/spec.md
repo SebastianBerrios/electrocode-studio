@@ -8,13 +8,26 @@ The landing page (`/[locale]`) as one continuous sales argument, told in a fixed
 
 ### Requirement: Fixed Section Order
 
-The landing MUST render its sections in this order: (1) Hero, (2) Servicios, (3) Proceso, (4) Proyectos, (5) Autoridad, (6) Precios summary, (7) Retainer/Mantenimiento, (8) Brief form + WhatsApp, (9) Footer.
+The landing MUST render its sections in this order: (1) Hero, (2) Servicios, (3) Proceso, (3b) Cómo trabajamos, (4) Proyectos, (5) Autoridad, (6) Precios summary, (7) Retainer/Mantenimiento, (7b) FAQ, (8) Brief form + WhatsApp, (9) Footer.
+
+Sections 3b and 7b were inserted by the green restyle. They are additions between the eight originally-numbered sections, never reorderings of them: the original sequence still reads top to bottom exactly as it did.
+
+- **3b, "Cómo trabajamos"** — the reference direction's six-card "why work with us" grid. Every card MUST restate a commitment already held as data in `lib/content/**`; it MUST NOT claim speed, quality, or scale, none of which exist as facts in this repo. It sits after Proceso because five of its six cards qualify commitments Proceso has just introduced.
+- **7b, "FAQ"** — the landing's objection block, rendered through the SAME `components/pricing/faq.tsx` and the same `pricing.faq` dictionary entries the pricing page uses. It MUST NOT hold its own questions, answers, or heading. It sits immediately before the Brief form so the last thing read before the form is the answer to whatever was stopping the visitor.
+
+There is deliberately NO separate closing CTA band, even though the reference direction has one: sections 8 and 9 already close the page on the conversion form followed by a full-width dark-green footer, so a third closing element between them would repeat the same call twice in a row.
 
 #### Scenario: Section order matches the specified sequence
 
 - GIVEN the rendered landing page
 - WHEN sections are enumerated top to bottom
-- THEN they appear in the order Hero, Servicios, Proceso, Proyectos, Autoridad, Precios, Retainer, Brief/WhatsApp, Footer
+- THEN they appear in the order Hero, Servicios, Proceso, Cómo trabajamos, Proyectos, Autoridad, Precios, Retainer, FAQ, Brief/WhatsApp, Footer
+
+#### Scenario: The "Cómo trabajamos" grid makes no unsourced claim
+
+- GIVEN the six cards in section 3b
+- WHEN each card's statement is traced
+- THEN it resolves to an existing value in `lib/content/**` or to an existing answer in `pricing.faq`, and no card asserts a delivery speed, a quality level, or a scale figure
 
 ### Requirement: Hero Section Contract
 

@@ -2,10 +2,12 @@ import { HeroParallax } from "@/components/ui/hero-parallax";
 import { HeroHeader } from "@/components/sections/hero-header";
 import { Services } from "@/components/sections/services";
 import { Process } from "@/components/sections/process";
+import { WayOfWorking } from "@/components/sections/way-of-working";
 import { Portfolio } from "@/components/sections/portfolio";
 import { Authority } from "@/components/sections/authority";
 import { PricingSummary } from "@/components/sections/pricing-summary";
 import { Retainer } from "@/components/sections/retainer";
+import { FaqSection } from "@/components/sections/faq-section";
 import { Brief } from "@/components/sections/brief";
 import { assertLocale } from "@/lib/content/locales";
 import { toHeroProducts } from "@/lib/content/projections";
@@ -84,10 +86,20 @@ export default async function LocalePage({
       />
       <Services locale={validLocale} />
       <Process locale={validLocale} />
+      {/*
+        Sections 3b and 7b, inserted by the green restyle. Both are additions
+        BETWEEN the eight sections `specs/landing-narrative/spec.md`'s "Fixed
+        Section Order" fixes, never reorderings of them — that requirement's
+        sequence still reads top to bottom exactly as written. The spec has
+        been updated to name both insertions; see it for the reasoning on
+        each.
+      */}
+      <WayOfWorking locale={validLocale} />
       <Portfolio locale={validLocale} />
       <Authority locale={validLocale} />
       <PricingSummary locale={validLocale} />
       <Retainer locale={validLocale} />
+      <FaqSection locale={validLocale} />
       <Brief locale={validLocale} />
     </main>
   );
