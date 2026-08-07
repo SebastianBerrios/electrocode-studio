@@ -26,17 +26,43 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   /*
-   * The editorial direction's ONE saturated accent, kept deliberately
-   * separate from shadcn's own `--accent`/`--accent-foreground` pair above.
-   * shadcn/ui components (and any pulled from the Aceternity/shadcn
-   * registries later) assume `--accent` means "a subtle hover/selected
-   * surface", not "the brand's loud colour" — overloading it would silently
-   * paint every future menu-hover state rust. `accent-signal` is the token
-   * actually meant to be used with scarcity: CTA emphasis, price figures,
-   * focus rings, the one badge that should pop off the paper.
+   * The direction's ONE saturated accent, kept deliberately separate from
+   * shadcn's own `--accent`/`--accent-foreground` pair above. shadcn/ui
+   * components (and any pulled from the Aceternity/shadcn registries later)
+   * assume `--accent` means "a subtle hover/selected surface", not "the
+   * brand's loud colour" — overloading it would silently paint every future
+   * menu-hover state green. `accent-signal` is the token actually meant to
+   * carry emphasis: CTA fills, price figures, focus rings, the one word of
+   * the hero heading that should pop off the page.
    */
   --color-accent-signal: var(--accent-signal);
   --color-accent-signal-foreground: var(--accent-signal-foreground);
+
+  /*
+   * Inverted surface tokens, introduced by the green restyle.
+   *
+   * The reference direction puts a dark-green floating "pill" bar on a pale
+   * green page — an inverted island, not a tinted version of the page. Its
+   * label and CTA colours cannot be derived from the page tokens above
+   * (`--foreground` on `--background` is dark-on-light; inside the pill the
+   * relationship flips), so they get their own names rather than being
+   * open-coded as one-off arbitrary values in `site-header.tsx`.
+   *
+   * `--nav-cta` is NOT `--accent-signal`. Measured: `--accent-signal`
+   * (oklch 0.52) against `--nav` (oklch 0.29) is only **2.64:1**, below the
+   * 3:1 WCAG 1.4.11 floor for a UI component's visual boundary. The
+   * reference site has exactly this defect — its own green button on its own
+   * dark-green bar measures **2.80:1**. `--nav-cta` is lifted to L 0.60 for
+   * **3.69:1** against the bar, and pairs with a DARK label
+   * (`--nav-cta-foreground`, **4.76:1**) because white-on-that-green only
+   * reaches 3.73:1 — short of the 4.5:1 needed for a normal-size label.
+   */
+  --color-nav: var(--nav);
+  --color-nav-foreground: var(--nav-foreground);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-cta: var(--nav-cta);
+  --color-nav-cta-foreground: var(--nav-cta-foreground);
+
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -56,123 +82,186 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /*
-   * Editorial typography. `--font-fraunces`/`--font-karla` are the CSS
-   * variables `next/font/google` attaches to `<html>` in `app/layout.tsx`.
-   * Generic-keyword fallbacks only (`serif`/`sans-serif`) — no named system
-   * font is ever the design's actual typeface, only a last-resort safety net
-   * for the brief moment before the web font downloads.
+   * One typeface, everything. `--font-montserrat` is the CSS variable
+   * `next/font/google` attaches to `<html>` in `app/layout.tsx`.
+   *
+   * `--font-display` and `--font-sans` deliberately resolve to the SAME
+   * family. The previous direction paired a display serif (Fraunces) with a
+   * body grotesque (Karla); the green direction is single-family, where
+   * hierarchy comes from weight and scale rather than from a change of
+   * voice. Both variables are kept — every existing `font-display` /
+   * `font-sans` utility in the codebase keeps working untouched, and the
+   * split stays available if a second family is ever reintroduced.
+   *
+   * Generic-keyword fallback only (`sans-serif`) — no named system font is
+   * ever the design's actual typeface, only a last-resort safety net for the
+   * brief moment before the web font downloads.
    */
-  --font-display: var(--font-fraunces), serif;
-  --font-sans: var(--font-karla), sans-serif;
+  --font-display: var(--font-montserrat), sans-serif;
+  --font-sans: var(--font-montserrat), sans-serif;
 }
 
 /*
- * Editorial colour direction ("Editorial claro — señal de oficio"): warm
- * paper rather than pure white, a near-black ink with a hint of warmth, and
- * exactly ONE saturated accent (`--accent-signal`, a terracotta/rust) used
- * with real scarcity. Every hue below shares the same warm cast (OKLCH hue
- * ~40-80) so paper, ink, borders, and the accent all read as one family
- * rather than a neutral grey UI with a colour bolted on. Token NAMES are
- * unchanged from the original shadcn structure (`--background`,
- * `--foreground`, `--card`, …) — only their values move, per this slice's
- * instruction to extend the existing structure rather than replace it.
+ * Green colour direction, derived from two sources measured rather than
+ * eyeballed:
+ *
+ * 1. `public/logo.png` — the ElectroCode mark is a desaturated sage
+ *    (`#8BA8A0`, oklch 0.707 0.034 **177**) on a pale green-grey ground
+ *    (`#E6EBE8`, oklch 0.935 0.007 **160**).
+ * 2. The reference direction's forest greens, all sitting at hue **138**
+ *    (paper `#F3F7F2`, ink `#2A3626`, accent `#5A804E`).
+ *
+ * Every hue below is **145** — a deliberate bridge. Copying 138 literally
+ * would put the whole page ~39 degrees from the logo that sits in the
+ * header, which reads as two different greens rather than one family; 145
+ * still reads as the reference's forest green while landing close enough to
+ * the mark that they belong together. Chroma stays low everywhere except
+ * `--accent-signal`, so the page reads as tinted paper and ink, not as a
+ * green UI.
+ *
+ * Token NAMES are unchanged from the original shadcn structure
+ * (`--background`, `--foreground`, `--card`, …) — only their values move,
+ * plus the five `--nav-*` additions documented above.
+ *
+ * Contrast is computed (OKLCH -> linear sRGB -> relative luminance), never
+ * estimated. Measured ratios for every pairing this palette actually ships:
+ *   foreground / background ............. 12.92:1
+ *   foreground / card ................... 13.77:1
+ *   muted-foreground / background ........ 5.48:1
+ *   muted-foreground / card .............. 5.84:1
+ *   accent-signal-fg / accent-signal ..... 5.21:1  (button label)
+ *   accent-signal as text / background ... 4.89:1  (links, hero accent word)
+ *   input / background ................... 3.08:1  (WCAG 1.4.11, 3:1 floor)
+ *   nav-foreground / nav ................ 13.20:1
+ *   nav-muted / nav ...................... 9.16:1
+ *   nav-cta / nav ........................ 3.69:1  (1.4.11 boundary)
+ *   nav-cta-foreground / nav-cta ......... 4.76:1  (button label)
  */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.969 0.013 80);
-  --foreground: oklch(0.225 0.019 55);
-  --card: oklch(0.958 0.015 78);
-  --card-foreground: oklch(0.225 0.019 55);
-  --popover: oklch(0.958 0.015 78);
-  --popover-foreground: oklch(0.225 0.019 55);
-  --primary: oklch(0.225 0.019 55);
-  --primary-foreground: oklch(0.969 0.013 80);
-  --secondary: oklch(0.91 0.016 75);
-  --secondary-foreground: oklch(0.225 0.019 55);
-  --muted: oklch(0.93 0.014 76);
-  --muted-foreground: oklch(0.44 0.024 55);
-  --accent: oklch(0.93 0.016 70);
-  --accent-foreground: oklch(0.225 0.019 55);
   /*
-   * L tuned to 0.55 (not the visually-first-picked 0.58) specifically so
-   * BOTH of this token's real uses clear WCAG AA at normal text size:
-   * accent-signal-foreground-on-accent-signal (button labels) and
-   * accent-signal-as-text-on-background (WhatsApp/CTA links) — verified by
-   * OKLCH->sRGB conversion + relative-luminance contrast ratio, not eyeballed
-   * (4.77:1 and 5.07:1 respectively, both above the 4.5:1 floor).
+   * Raised from 0.625rem. The reference direction's cards, buttons and bars
+   * are markedly rounder than the previous editorial direction's; because
+   * every `--radius-*` step above is derived from this one value, the whole
+   * component set follows from this single line.
    */
-  --accent-signal: oklch(0.55 0.16 38);
-  --accent-signal-foreground: oklch(0.99 0.005 80);
+  --radius: 1rem;
+  --background: oklch(0.972 0.01 145);
+  --foreground: oklch(0.29 0.03 145);
+  --card: oklch(0.995 0.002 145);
+  --card-foreground: oklch(0.29 0.03 145);
+  --popover: oklch(0.995 0.002 145);
+  --popover-foreground: oklch(0.29 0.03 145);
+  --primary: oklch(0.29 0.03 145);
+  --primary-foreground: oklch(0.995 0.002 145);
+  --secondary: oklch(0.925 0.014 145);
+  --secondary-foreground: oklch(0.29 0.03 145);
+  --muted: oklch(0.945 0.012 145);
+  --muted-foreground: oklch(0.5 0.028 145);
+  --accent: oklch(0.94 0.016 145);
+  --accent-foreground: oklch(0.29 0.03 145);
+  /*
+   * L tuned to 0.52 so BOTH of this token's real uses clear WCAG AA at
+   * normal text size: accent-signal-foreground-on-accent-signal (button
+   * labels, 5.21:1) and accent-signal-as-text-on-background (links, the
+   * hero's accented word, 4.89:1). Anything lighter loses the second one.
+   */
+  --accent-signal: oklch(0.52 0.095 145);
+  --accent-signal-foreground: oklch(0.995 0.002 145);
+  --nav: oklch(0.29 0.03 145);
+  --nav-foreground: oklch(0.98 0.006 145);
+  --nav-muted: oklch(0.86 0.012 145);
+  --nav-cta: oklch(0.6 0.1 145);
+  --nav-cta-foreground: oklch(0.2 0.026 145);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.84 0.02 65);
+  --border: oklch(0.885 0.014 145);
   /*
    * `--input` is the border colour for form controls specifically
    * (`border-input`, used only by `components/brief/brief-form.tsx`'s six
-   * fields — verified: no other component references it). It used to equal
-   * `--border` (0.84 L), which measured **1.50:1** against `--background` —
-   * WCAG 1.4.11 requires 3:1 for a UI component's visual boundary. Darkened
-   * to L 0.6 (same warm hue/chroma, `C 0.02 H 65`, so it stays in the same
-   * family as every other border token) for **3.62:1**, computed OKLCH →
-   * linear sRGB → relative luminance (verify-report-final.md finding W7).
-   * `--border` itself is unchanged — it is a decorative divider (cards,
+   * fields). It is deliberately NOT equal to `--border`: WCAG 1.4.11
+   * requires 3:1 for a UI component's visual boundary, and `--border` at
+   * L 0.885 measures only 1.36:1 against `--background`. L 0.64 gives
+   * **3.08:1**. `--border` itself is a decorative divider (cards,
    * header/footer rules), not a form control boundary, so 1.4.11 does not
    * apply to it the same way.
    */
-  --input: oklch(0.6 0.02 65);
-  --ring: oklch(0.55 0.16 38 / 55%);
-  --chart-1: oklch(0.646 0.222 41.116);
+  --input: oklch(0.64 0.022 145);
+  --ring: oklch(0.52 0.095 145 / 55%);
+  --chart-1: oklch(0.52 0.095 145);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.958 0.015 78);
-  --sidebar-foreground: oklch(0.225 0.019 55);
-  --sidebar-primary: oklch(0.225 0.019 55);
-  --sidebar-primary-foreground: oklch(0.969 0.013 80);
-  --sidebar-accent: oklch(0.93 0.016 70);
-  --sidebar-accent-foreground: oklch(0.225 0.019 55);
-  --sidebar-border: oklch(0.84 0.02 65);
-  --sidebar-ring: oklch(0.55 0.16 38 / 55%);
+  --sidebar: oklch(0.995 0.002 145);
+  --sidebar-foreground: oklch(0.29 0.03 145);
+  --sidebar-primary: oklch(0.29 0.03 145);
+  --sidebar-primary-foreground: oklch(0.995 0.002 145);
+  --sidebar-accent: oklch(0.94 0.016 145);
+  --sidebar-accent-foreground: oklch(0.29 0.03 145);
+  --sidebar-border: oklch(0.885 0.014 145);
+  --sidebar-ring: oklch(0.52 0.095 145 / 55%);
 }
 
+/*
+ * Dark theme. Still unreachable in production (nothing renders `.dark` —
+ * there is no theme toggle), kept internally consistent regardless so the
+ * class does not become a trap for whoever adds one. Same computed-contrast
+ * discipline as `:root`:
+ *   foreground / background ......... 15.11:1
+ *   muted-foreground / background .... 7.76:1
+ *   muted-foreground / card .......... 6.65:1
+ *   accent-signal-fg / accent-signal . 7.36:1
+ *   accent-signal as text / bg ....... 7.36:1
+ *   input / background ............... 4.83:1  (1.4.11)
+ */
 .dark {
-  --background: oklch(0.16 0.014 55);
-  --foreground: oklch(0.95 0.014 78);
-  --card: oklch(0.205 0.017 55);
-  --card-foreground: oklch(0.95 0.014 78);
-  --popover: oklch(0.205 0.017 55);
-  --popover-foreground: oklch(0.95 0.014 78);
-  --primary: oklch(0.92 0.018 75);
-  --primary-foreground: oklch(0.18 0.015 55);
-  --secondary: oklch(0.27 0.018 55);
-  --secondary-foreground: oklch(0.95 0.014 78);
-  --muted: oklch(0.27 0.018 55);
-  --muted-foreground: oklch(0.72 0.02 70);
-  --accent: oklch(0.3 0.02 55);
-  --accent-foreground: oklch(0.95 0.014 78);
-  --accent-signal: oklch(0.68 0.17 40);
-  --accent-signal-foreground: oklch(0.16 0.014 55);
+  --background: oklch(0.215 0.02 145);
+  --foreground: oklch(0.95 0.01 145);
+  --card: oklch(0.27 0.022 145);
+  --card-foreground: oklch(0.95 0.01 145);
+  --popover: oklch(0.27 0.022 145);
+  --popover-foreground: oklch(0.95 0.01 145);
+  --primary: oklch(0.95 0.01 145);
+  --primary-foreground: oklch(0.215 0.02 145);
+  --secondary: oklch(0.32 0.024 145);
+  --secondary-foreground: oklch(0.95 0.01 145);
+  --muted: oklch(0.32 0.024 145);
+  --muted-foreground: oklch(0.745 0.02 145);
+  --accent: oklch(0.34 0.026 145);
+  --accent-foreground: oklch(0.95 0.01 145);
+  --accent-signal: oklch(0.72 0.12 145);
+  --accent-signal-foreground: oklch(0.215 0.02 145);
+  /*
+   * In dark mode the page is ALREADY the dark green the bar uses in light
+   * mode, so an inverted island would disappear. The bar instead lifts one
+   * step above the page (`--card`), and its CTA can safely be the regular
+   * `--accent-signal` because that pairing measures 6.31:1 against the
+   * lifted bar — comfortably above the 3:1 boundary floor, unlike the
+   * light-mode case that forced `--nav-cta` into existence.
+   */
+  --nav: oklch(0.27 0.022 145);
+  --nav-foreground: oklch(0.95 0.01 145);
+  --nav-muted: oklch(0.745 0.02 145);
+  --nav-cta: oklch(0.72 0.12 145);
+  --nav-cta-foreground: oklch(0.215 0.02 145);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 12%);
-  /* Same W7 remediation as `:root`'s `--input`: raised from 16% to 40% white
-     alpha so the form-input border still clears 3:1 against the dark
-     `--background` (computed: 3.80:1). Unreachable in production today (no
-     theme toggle renders `.dark`), kept consistent regardless. */
+  /* Same 1.4.11 reasoning as `:root`'s `--input`: 40% white alpha keeps the
+     form-input border clear of 3:1 against the dark `--background`. */
   --input: oklch(1 0 0 / 40%);
-  --ring: oklch(0.68 0.17 40 / 50%);
-  --chart-1: oklch(0.488 0.243 264.376);
+  --ring: oklch(0.72 0.12 145 / 50%);
+  --chart-1: oklch(0.72 0.12 145);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0.017 55);
-  --sidebar-foreground: oklch(0.95 0.014 78);
-  --sidebar-primary: oklch(0.68 0.17 40);
-  --sidebar-primary-foreground: oklch(0.16 0.014 55);
-  --sidebar-accent: oklch(0.3 0.02 55);
-  --sidebar-accent-foreground: oklch(0.95 0.014 78);
+  --sidebar: oklch(0.27 0.022 145);
+  --sidebar-foreground: oklch(0.95 0.01 145);
+  --sidebar-primary: oklch(0.72 0.12 145);
+  --sidebar-primary-foreground: oklch(0.215 0.02 145);
+  --sidebar-accent: oklch(0.34 0.026 145);
+  --sidebar-accent-foreground: oklch(0.95 0.01 145);
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.68 0.17 40 / 50%);
+  --sidebar-ring: oklch(0.72 0.12 145 / 50%);
 }
 
 @layer base {
@@ -182,36 +271,52 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+  /*
+   * Single-family typography means headings need to earn their hierarchy
+   * from weight and tracking rather than from a change of typeface. The
+   * reference direction's headings are heavy and tightly tracked at every
+   * level; `font-display` still resolves through the same variable as
+   * `font-sans` (see the `@theme inline` note), so this rule is what
+   * actually makes a heading look like one.
+   */
   h1,
   h2,
   h3,
   h4 {
-    @apply font-display;
+    @apply font-display font-bold tracking-tight;
+  }
+
+  /*
+   * Anchor offset for the sticky header.
+   *
+   * Every in-page link on this site targets a `<section id="...">` —
+   * `#proyectos`, `#precios`, `#brief`, `#servicios`, `#proceso`,
+   * `#retainer`, `#como-trabajamos`, `#faq`. The header became `position:
+   * sticky` in the green restyle, so without this the browser scrolled each
+   * target flush to the viewport top and the bar landed on top of the
+   * section's own heading. Measured worst case: the header wraps to two rows
+   * below `sm` (see `site-header.tsx`), which is why the mobile value is the
+   * larger of the two.
+   *
+   * `scroll-margin-top` rather than padding or a spacer element: it changes
+   * only where scrolling stops, never the layout.
+   */
+  section[id] {
+    scroll-margin-top: 7.5rem;
+  }
+
+  @variant sm {
+    section[id] {
+      scroll-margin-top: 6rem;
+    }
   }
 }
 
 @layer utilities {
   /*
-   * Paper atmosphere: a very low-opacity dot texture, fixed full-viewport
-   * behind every route (`app/layout.tsx`). A single static background image
-   * — nothing here ever animates, so it needs no `prefers-reduced-motion`
-   * guard of its own.
-   */
-  .bg-paper-texture {
-    @apply pointer-events-none fixed inset-0 -z-10;
-    background-image: radial-gradient(
-      color-mix(in oklch, var(--foreground) 100%, transparent) 1px,
-      transparent 1px
-    );
-    background-size: 22px 22px;
-    opacity: 0.05;
-  }
-
-  /*
-   * CSS-only staggered section reveals ("Everything else: CSS only —
-   * staggered `animation-delay` reveals"). Callers set `animation-delay`
-   * per item via an inline `style` (e.g. `style={{ animationDelay:
-   * \`${index * 70}ms\` }}`). Reduced motion is handled globally below, not
+   * CSS-only staggered section reveals. Callers set `animation-delay` per
+   * item via an inline `style` (e.g. `style={{ animationDelay:
+   * `${index * 70}ms` }}`). Reduced motion is handled globally below, not
    * per-utility, so every current and future user of `.reveal` is covered
    * for free.
    */
@@ -222,17 +327,16 @@
   /*
    * Per-word variant for the hero heading's staggered entrance.
    *
-   * This replaces a JS-driven reveal that shipped every word as
-   * `class="opacity-0" style="filter:blur(10px)"` in the static HTML and
-   * un-hid it from a `useEffect`. That made the site's primary heading — and
-   * its LCP element — invisible without JavaScript, and an inline style set
-   * by JS is unreachable by the global reduced-motion override below
-   * (verify-report-final.md, finding C5).
+   * Kept as CSS rather than JS deliberately: an earlier JS-driven version
+   * shipped every word as `class="opacity-0"` in the static HTML and un-hid
+   * it from a `useEffect`, which made the site's primary heading — and its
+   * LCP element — invisible without JavaScript, and an inline style set by
+   * JS is unreachable by the global reduced-motion override below.
    *
-   * As CSS, the failure modes all resolve to "visible": no JS still animates,
-   * no animation support falls back to the element's natural opacity, and
-   * reduced motion collapses the duration so it lands on the `to` state
-   * immediately.
+   * As CSS, the failure modes all resolve to "visible": no JS still
+   * animates, no animation support falls back to the element's natural
+   * opacity, and reduced motion collapses the duration so it lands on the
+   * `to` state immediately.
    */
   .reveal-word {
     display: inline-block;

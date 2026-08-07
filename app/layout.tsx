@@ -1,40 +1,36 @@
 import type { Metadata } from "next";
-import { Fraunces, Karla } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { DEFAULT_LOCALE } from "@/lib/content/locales";
 
 /**
- * Editorial typography (design direction "Editorial claro — señal de
- * oficio", feat/editorial-design). Before this slice the site imported NO
- * font at all and rendered in the system default — see the change's own
- * design brief for why that alone explains much of the previous flatness.
+ * Single-family typography (green restyle).
  *
- * `Fraunces` is the display serif: a variable optical-size family with a
- * `WONK` axis for its characterful ink-trap detailing, genuinely uncommon in
- * developer portfolios. `opsz` is exposed so large display sizes (the hero
- * heading) pick up the family's more expressive high-contrast cut while body
- * copy at small sizes stays legible — the whole point of a variable optical
- * size axis. `Karla` is the body grotesque: enough personality to pair with
- * a warm serif, plain enough to stay legible at small sizes in dense pricing
- * tables and form copy.
+ * This replaces the previous editorial pairing of a display serif
+ * (`Fraunces`, with its `opsz`/`WONK` axes) and a body grotesque (`Karla`).
+ * The reference direction this restyle follows sets EVERY element —
+ * navigation, display headings, body copy, buttons, form labels — in
+ * Montserrat, with hierarchy carried by weight and scale rather than by a
+ * change of voice. Keeping a serif for headings would have been a different
+ * design, not this one.
  *
- * Both load via `next/font/google` with `display: "swap"` (no invisible-text
- * flash while the face downloads) and are exposed as CSS variables, wired to
- * Tailwind v4 `font-display`/`font-sans` utilities in `app/globals.css`'s
- * `@theme inline` block — never referenced as raw `--font-fraunces-variable`
- * anywhere outside this file and that one block.
+ * Loaded as a variable font (no explicit `weight` array) so the full 100–900
+ * range is available to the heavy display sizes and the light body copy
+ * alike from a single download, with `display: "swap"` (no invisible-text
+ * flash while the face downloads).
+ *
+ * Exposed as one CSS variable and wired to BOTH the Tailwind v4
+ * `font-display` and `font-sans` utilities in `app/globals.css`'s
+ * `@theme inline` block — the two utilities are kept distinct there even
+ * though they currently resolve to the same family, so every existing
+ * `font-display` call site in the codebase keeps working untouched. Never
+ * referenced as raw `--font-montserrat` anywhere outside this file and that
+ * one block.
  */
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  axes: ["opsz", "WONK"],
-  display: "swap",
-  variable: "--font-fraunces",
-});
-
-const karla = Karla({
+const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-karla",
+  variable: "--font-montserrat",
 });
 
 const SITE_TITLE = "ElectroCode Studio";
@@ -83,18 +79,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${fraunces.variable} ${karla.variable}`}>
-      <body className="font-sans antialiased">
-        {/*
-          Paper atmosphere: a very low-opacity dot texture, fixed behind
-          every route. Purely decorative (`aria-hidden`), static (no
-          animation at all — nothing here needs a `prefers-reduced-motion`
-          guard because nothing here ever moves), and `-z-10` so it never
-          intercepts a click or a screen reader.
-        */}
-        <div aria-hidden="true" className="bg-paper-texture" />
-        {children}
-      </body>
+    // The fixed, low-opacity dot texture that used to sit behind every route
+    // (`.bg-paper-texture`) is gone along with its utility in
+    // `globals.css`. The previous "warm paper" direction needed the grain to
+    // read as paper; the green direction's surfaces are flat by design —
+    // depth comes from the pale page / white card / dark bar stack, and a
+    // texture underneath all three only muddied it.
+    <html lang="es" className={montserrat.variable}>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }
