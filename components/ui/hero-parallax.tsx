@@ -149,7 +149,13 @@ export const HeroParallax = ({
   return (
     <div
       ref={ref}
-      className="py-20 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
+      // `pb-20`, not `py-20`. The top padding used to stack on top of the
+      // `header` slot's own vertical padding — `components/sections/
+      // hero-header.tsx` measured ~208px of combined padding above the `<h1>`,
+      // which is most of why the hero overflowed the fold. That slot now owns
+      // its own top spacing (it sizes itself to the viewport), so this
+      // component adding more would push it straight back down.
+      className="pb-20 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
     >
       {header}
       <motion.div
