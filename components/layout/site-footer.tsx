@@ -109,14 +109,16 @@ export function SiteFooter({ locale }: { locale: Locale }) {
                   {footer.processLink}
                 </Link>
               </li>
-              <li>
-                <Link
-                  href={landingAnchor(locale, "retainer") as Route}
-                  className={linkClass}
-                >
-                  {footer.retainerLink}
-                </Link>
-              </li>
+              {/* No "Mantenimiento" entry here any more. This column lists
+                  landing sections, and the Retainer section no longer exists
+                  (see `app/[locale]/page.tsx`). Re-pointing it at the pricing
+                  page would have duplicated a destination the Servicios column
+                  above already links: its line-D entry goes to that exact
+                  block via `pricingLineAnchor()`. The retainer is still one
+                  click from the footer — just not twice.
+                  `FooterDictionary.retainerLink` consequently has no consumer;
+                  it stays in the shared dictionary type on the same reasoning
+                  as `ProcessDictionary.approvalBadge`. */}
               <li>
                 <Link href={pricingPath(locale)} className={linkClass}>
                   {footer.pricingLink}

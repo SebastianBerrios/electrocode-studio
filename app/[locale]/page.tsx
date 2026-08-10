@@ -6,7 +6,6 @@ import { WayOfWorking } from "@/components/sections/way-of-working";
 import { Portfolio } from "@/components/sections/portfolio";
 import { Authority } from "@/components/sections/authority";
 import { PricingSummary } from "@/components/sections/pricing-summary";
-import { Retainer } from "@/components/sections/retainer";
 import { FaqSection } from "@/components/sections/faq-section";
 import { Brief } from "@/components/sections/brief";
 import { assertLocale } from "@/lib/content/locales";
@@ -52,13 +51,29 @@ export async function generateMetadata({
 export const dynamic = "force-static";
 
 /**
- * The locale landing page. All eight numbered sections `specs/
- * landing-narrative/spec.md`'s "Fixed Section Order" requires are now
- * composed: 1 (Hero, PR 2), 2 (Servicios, PR 3a), 3 (Proceso, PR 3a), 4
- * (Proyectos, PR 3a), 5 (Autoridad, PR 3b), 6 (Precios summary, PR 3b/4), 7
- * (Retainer, PR 3b), 8 (Brief/WhatsApp conversion, task 6.7, this batch).
- * The footer (site chrome, not a numbered landing section) is rendered by
- * `app/[locale]/layout.tsx`, unchanged.
+ * The locale landing page. It composes the numbered sections `specs/
+ * landing-narrative/spec.md`'s "Fixed Section Order" requires: 1 (Hero, PR 2),
+ * 2 (Servicios, PR 3a), 3 (Proceso, PR 3a), 4 (Proyectos, PR 3a), 5
+ * (Autoridad, PR 3b), 6 (Precios summary, PR 3b/4), 8 (Brief/WhatsApp
+ * conversion, task 6.7). The footer (site chrome, not a numbered landing
+ * section) is rendered by `app/[locale]/layout.tsx`, unchanged.
+ *
+ * **Section 7 (Retainer/Mantenimiento) is deliberately absent**, and the spec's
+ * "Fixed Section Order" and "Retainer Section Contract" requirements have been
+ * updated to record that rather than left to contradict this file. The landing
+ * no longer pitches the maintenance retainer at all: line D is filtered out of
+ * the Servicios accordion (`LINES_HIDDEN_FROM_LANDING` in
+ * `lib/content/projections.ts`, which explains the reasoning) and the
+ * commitments section that used to sit between Precios and the FAQ is gone with
+ * it — `components/sections/retainer.tsx` was deleted, having no other consumer,
+ * the same call made for `components/ui/sticky-scroll-reveal.tsx`.
+ *
+ * **The retainer is still sold.** Every commitment that section rendered still
+ * reaches the visitor through `components/pricing/retainer-plans.tsx` on
+ * `/[locale]/precios`, which reads the same `RETAINER_COMMITMENTS` and adds the
+ * prices the landing section never showed. `lib/content/retainer.ts` and its
+ * invariants are untouched; the footer's "Mantenimiento" link now points at
+ * that pricing block instead of the removed `#retainer` anchor.
  *
  * Replaces the former `app/page.tsx` (task 2.18). `toHeroProducts(locale)`
  * is now the single source of truth for the hero's product grid, replacing
@@ -98,7 +113,6 @@ export default async function LocalePage({
       <Portfolio locale={validLocale} />
       <Authority locale={validLocale} />
       <PricingSummary locale={validLocale} />
-      <Retainer locale={validLocale} />
       <FaqSection locale={validLocale} />
       <Brief locale={validLocale} />
     </main>

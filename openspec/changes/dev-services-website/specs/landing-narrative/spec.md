@@ -8,9 +8,11 @@ The landing page (`/[locale]`) as one continuous sales argument, told in a fixed
 
 ### Requirement: Fixed Section Order
 
-The landing MUST render its sections in this order: (1) Hero, (2) Servicios, (3) Proceso, (3b) Cómo trabajamos, (4) Proyectos, (5) Autoridad, (6) Precios summary, (7) Retainer/Mantenimiento, (7b) FAQ, (8) Brief form + WhatsApp, (9) Footer.
+The landing MUST render its sections in this order: (1) Hero, (2) Servicios, (3) Proceso, (3b) Cómo trabajamos, (4) Proyectos, (5) Autoridad, (6) Precios summary, (7b) FAQ, (8) Brief form + WhatsApp, (9) Footer.
 
-Sections 3b and 7b were inserted by the green restyle. They are additions between the eight originally-numbered sections, never reorderings of them: the original sequence still reads top to bottom exactly as it did.
+Sections 3b and 7b were inserted by the green restyle. They are additions between the originally-numbered sections, never reorderings of them: the remaining sequence still reads top to bottom exactly as it did.
+
+**Section 7 (Retainer/Mantenimiento) has been removed from the landing**, and its number is retired rather than reused, so the sections that follow keep the numbers they have always had. The landing no longer pitches the maintenance retainer anywhere: line D is also filtered out of the Servicios accordion in section 2. The retainer remains a product the studio sells — see the Retainer Placement Contract below for where it now lives and what MUST stay true of it.
 
 - **3b, "Cómo trabajamos"** — the reference direction's six-card "why work with us" grid. Every card MUST restate a commitment already held as data in `lib/content/**`; it MUST NOT claim speed, quality, or scale, none of which exist as facts in this repo. It sits after Proceso because five of its six cards qualify commitments Proceso has just introduced.
 - **7b, "FAQ"** — the landing's objection block, rendered through the SAME `components/pricing/faq.tsx` and the same `pricing.faq` dictionary entries the pricing page uses. It MUST NOT hold its own questions, answers, or heading. It sits immediately before the Brief form so the last thing read before the form is the answer to whatever was stopping the visitor.
@@ -21,7 +23,7 @@ There is deliberately NO separate closing CTA band, even though the reference di
 
 - GIVEN the rendered landing page
 - WHEN sections are enumerated top to bottom
-- THEN they appear in the order Hero, Servicios, Proceso, Cómo trabajamos, Proyectos, Autoridad, Precios, Retainer, FAQ, Brief/WhatsApp, Footer
+- THEN they appear in the order Hero, Servicios, Proceso, Cómo trabajamos, Proyectos, Autoridad, Precios, FAQ, Brief/WhatsApp, Footer, with no Retainer section between Precios and FAQ
 
 #### Scenario: The "Cómo trabajamos" grid makes no unsourced claim
 
@@ -90,15 +92,31 @@ The Precios section MUST summarize pricing across the four lines and link to `/[
 - WHEN compared to `/[locale]/precios`
 - THEN it shows only a subset, not the full tier anatomy, and a visible link to the full page
 
-### Requirement: Retainer Section Contract
+### Requirement: Retainer Placement Contract
 
-The Retainer section MUST present published commitments (per trust-signals capability) rather than a case study, since the retainer line has no possible project proof.
+The landing MUST NOT present the maintenance retainer — neither as its own section nor as a Servicios card for line D. This replaces the former "Retainer Section Contract", which required a landing section that no longer exists.
 
-#### Scenario: Retainer section shows commitments, not a project card
+Removing it from the landing MUST NOT remove it from the site. The retainer's published commitments MUST remain reachable, and wherever they are presented they MUST still be commitment values (per the trust-signals capability) rather than a case study, since line D has no possible project proof. `/[locale]/precios` is that home: its line-D block renders the same `RETAINER_COMMITMENTS` alongside the plan prices.
 
-- GIVEN the Retainer/Mantenimiento section
-- WHEN it renders
-- THEN it displays commitment values, not a portfolio-style project card
+Line D MUST remain a member of the service catalogue: `SERVICE_LINES`, the pricing page's line-D block, the footer's Servicios column, and the brief form's service-line selector are all unaffected by the landing's omission. Hiding a line from the landing is a narrative decision and MUST be expressed as a filter at the projection boundary, never by deleting the line from `lib/content/**`.
+
+#### Scenario: The landing does not pitch the retainer
+
+- GIVEN the rendered landing page
+- WHEN its sections and its Servicios cards are enumerated
+- THEN no section presents retainer commitments and no Servicios card names line D
+
+#### Scenario: Retainer commitments survive on the pricing page
+
+- GIVEN `/[locale]/precios`
+- WHEN its line-D block renders
+- THEN it displays commitment values from `RETAINER_COMMITMENTS`, not a portfolio-style project card
+
+#### Scenario: The catalogue still holds four lines
+
+- GIVEN `SERVICE_LINES`
+- WHEN its keys are enumerated
+- THEN A, B, C and D are all present, and D is reachable from the footer, the pricing page and the brief form
 
 ### Requirement: Conversion Section Contract
 
