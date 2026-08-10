@@ -255,8 +255,29 @@ export type ServiceCard = {
 };
 
 /**
- * The Servicios section's data source: the four fixed service lines, each
- * paired with its generic illustration.
+ * Service lines the landing's Servicios accordion does not show.
+ *
+ * **This is a landing-narrative decision, not a catalogue change.** Line D
+ * (Mantenimiento y evolución) is still a product the studio sells and is
+ * still fully present everywhere it is bought: the `/[locale]/precios` line-D
+ * block with its `RETAINER_PLANS`, the footer's Servicios column, and the
+ * brief form's service-line selector all read `SERVICE_LINES` directly and
+ * are untouched. What changed is only that the landing no longer opens with a
+ * retainer pitch — a visitor arriving cold is being sold project work, and
+ * the maintenance offer is something they meet on the pricing page once they
+ * are already interested.
+ *
+ * Filtering here rather than in `components/sections/services.tsx` keeps the
+ * component a plain renderer of whatever cards it is handed, which is the
+ * split every other section in `app/[locale]/page.tsx` already uses. The
+ * constant is typed as `ServiceLine` so a hidden line that stops existing
+ * becomes a compile error here instead of a silently ineffective filter.
+ */
+const LINES_HIDDEN_FROM_LANDING: readonly ServiceLine[] = ["D"];
+
+/**
+ * The Servicios section's data source: the fixed service lines the landing
+ * advertises, each paired with its generic illustration.
  *
  * This section deliberately does NOT read `publishableProjects()`. It used
  * to — each card showed the lowest-`order` project's primary screenshot —
@@ -266,15 +287,19 @@ export type ServiceCard = {
  * here is consent-gated any more because nothing here identifies a client.
  *
  * `SERVICE_LINES` is iterated through its own `A`/`B`/`C`/`D` key order, the
- * same order `components/sections/pricing-summary.tsx` and the footer use.
+ * same order `components/sections/pricing-summary.tsx` and the footer use,
+ * minus `LINES_HIDDEN_FROM_LANDING` — see that constant for why the omission
+ * is a narrative choice and not a removal from the catalogue.
  */
 export function toServiceCards(locale: Locale): readonly ServiceCard[] {
-  return Object.values(SERVICE_LINES).map((line) => ({
-    line: line.id,
-    name: line.name[locale],
-    description: line.description[locale],
-    illustration: SERVICE_ILLUSTRATIONS[line.id],
-  }));
+  return Object.values(SERVICE_LINES)
+    .filter((line) => !LINES_HIDDEN_FROM_LANDING.includes(line.id))
+    .map((line) => ({
+      line: line.id,
+      name: line.name[locale],
+      description: line.description[locale],
+      illustration: SERVICE_ILLUSTRATIONS[line.id],
+    }));
 }
 
 /**
