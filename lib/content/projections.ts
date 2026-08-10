@@ -10,6 +10,7 @@ import type { Locale } from "./locales";
 import type { Consent, Evidence, MediaAsset, Project } from "./types";
 import type { ServiceLine } from "./service-lines";
 import { SERVICE_LINES } from "./service-lines";
+import { SERVICE_ILLUSTRATIONS } from "./service-illustrations";
 import { PROJECTS } from "./projects";
 import { caseStudyPath, landingAnchor } from "@/lib/links";
 
@@ -241,53 +242,39 @@ export function toHeroProducts(locale: Locale): readonly HeroProduct[] {
  * A Servicios card for the landing's expanding accordion
  * (`components/sections/services.tsx`).
  *
- * `showcase` is the representative image for that service line, or
- * `undefined` when the line has none. It is deliberately optional rather
- * than defaulted to a stock or placeholder image: line D
- * (Mantenimiento/retainer) has no projects at all — `lib/content/
- * invariants.ts`'s "every non-retainer line has proof" check exempts it on
- * purpose — so an image there could only ever be decoration pretending to be
- * evidence.
+ * `illustration` is required, not optional: every line has a drawing, so a
+ * card can no longer render as a broken row with a hole where line D's image
+ * should be. See `lib/content/service-illustrations.ts` for why the image is
+ * a drawing rather than a client screenshot.
  */
 export type ServiceCard = {
   readonly line: ServiceLine;
   readonly name: string;
   readonly description: string;
-  readonly showcase: MediaAsset | undefined;
+  readonly illustration: MediaAsset;
 };
 
 /**
  * The Servicios section's data source: the four fixed service lines, each
- * paired with a real screenshot from a project on that line.
+ * paired with its generic illustration.
  *
- * The image is **derived, never mapped by hand**. A hardcoded
- * line-to-filename table would be a fifth place that has to be kept in sync
- * with `PROJECTS`, and would keep pointing at a project's screenshot after
- * that project's consent was withdrawn. This reads `publishableProjects()`
- * — the same consent-respecting set every other projection uses — takes the
- * lowest-`order` project on the line, and takes its primary asset. A line
- * whose only projects are `no-visual`, or which has no projects at all,
- * yields `undefined` and renders without an image.
+ * This section deliberately does NOT read `publishableProjects()`. It used
+ * to — each card showed the lowest-`order` project's primary screenshot —
+ * and `lib/content/service-illustrations.ts` records why that was wrong:
+ * Servicios describes what the studio sells, `#proyectos` is where real
+ * client work is shown with its consent and evidence state attached. Nothing
+ * here is consent-gated any more because nothing here identifies a client.
  *
  * `SERVICE_LINES` is iterated through its own `A`/`B`/`C`/`D` key order, the
  * same order `components/sections/pricing-summary.tsx` and the footer use.
  */
 export function toServiceCards(locale: Locale): readonly ServiceCard[] {
-  return Object.values(SERVICE_LINES).map((line) => {
-    const showcase = publishableProjects()
-      .filter((project) => project.serviceLine === line.id)
-      .toSorted((a, b) => a.order - b.order)
-      .flatMap((project) =>
-        project.evidence.state === "no-visual" ? [] : [project.evidence.media[0]],
-      )[0];
-
-    return {
-      line: line.id,
-      name: line.name[locale],
-      description: line.description[locale],
-      showcase,
-    };
-  });
+  return Object.values(SERVICE_LINES).map((line) => ({
+    line: line.id,
+    name: line.name[locale],
+    description: line.description[locale],
+    illustration: SERVICE_ILLUSTRATIONS[line.id],
+  }));
 }
 
 /**

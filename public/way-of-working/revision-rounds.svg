@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" role="img">
+  <rect width="640" height="400" fill="#edf2ec"/>
+  <rect x="48" y="56" width="544" height="288" rx="20" fill="#ffffff" stroke="#d7e2d6" stroke-width="2"/>
+
+  <!-- The revision loop: an open circle, so it reads as a cycle that ends -->
+  <path d="M300.6 89.7A112 112 0 1 1 234.2 128" fill="none" stroke="#4e8256" stroke-width="10" stroke-linecap="round"/>
+  <path d="M0-13 26 0 0 13z" transform="translate(234.2 128) rotate(-50)" fill="#4e8256"/>
+
+  <!-- The rounds that are included: both already checked off -->
+  <circle cx="432" cy="200" r="21" fill="#4e8256"/>
+  <path d="M423 200l6 7 12-14" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <circle cx="264" cy="297" r="21" fill="#4e8256"/>
+  <path d="M255 297l6 7 12-14" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Anything past them is outlined, not filled: quoted separately -->
+  <circle cx="208" cy="200" r="19" fill="#ffffff" stroke="#c8d8c6" stroke-width="4" stroke-dasharray="8 7"/>
+
+  <!-- The work being revised -->
+  <rect x="272" y="158" width="96" height="84" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="290" y="180" width="60" height="8" rx="4" fill="#c8d8c6"/>
+  <rect x="290" y="198" width="44" height="8" rx="4" fill="#c8d8c6"/>
+  <rect x="290" y="216" width="52" height="8" rx="4" fill="#dde8dc"/>
+</svg>

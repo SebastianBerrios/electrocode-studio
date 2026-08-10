@@ -121,14 +121,18 @@ export type SiteFooterDictionary = {
 
 /**
  * Landing section 2, "Servicios" (landing-narrative spec, "Servicios Section
- * Contract"). Each card renders two CTAs: `proofCta` (to the Proyectos grid)
- * and, as of task 4.8, `pricingCta` (to that line's block on
- * `/[locale]/precios`) — see `components/sections/services.tsx`'s doc
- * comment for why `pricingCta` was absent until PR 4 shipped the route.
+ * Contract").
+ *
+ * One CTA per card, `pricingCta`, pointing at that line's block on
+ * `/[locale]/precios` (task 4.8's `pricingLineAnchor()`). The former second
+ * CTA, `proofCta` (to the Proyectos grid), was removed with the illustration
+ * restyle: a service card no longer shows client work, so a "ver proyectos"
+ * link next to a drawing pointed at proof the card was not making. The
+ * Proyectos grid is still reachable from the navbar, the hero, and the
+ * footer — this removed a duplicate route to it, not the only one.
  */
 export type ServicesDictionary = {
   readonly heading: string;
-  readonly proofCta: string;
   readonly pricingCta: string;
 };
 
@@ -198,8 +202,31 @@ export type WayOfWorkingItem = {
  * exactly where one would look plausible.
  */
 export type WayOfWorkingDictionary = {
-  readonly heading: string;
+  /**
+   * The small line above the heading. Names what the six cards *are* —
+   * commitments — so the grid is not read as a list of virtues. It must stay
+   * a label, never a claim: it is the one string in this section with no card
+   * body underneath it to qualify what it says.
+   */
+  readonly eyebrow: string;
+  /**
+   * Split at its accented word, exactly the shape and for exactly the reason
+   * documented on `HeroDictionary.heading` — the accent can only ever close
+   * the heading, so no call site can drift into painting three scattered
+   * words. This section is the second and only other place that uses it.
+   */
+  readonly heading: {
+    readonly lead: string;
+    readonly accent: string;
+  };
   readonly intro: string;
+  /**
+   * Label for the CTA cell that sits inside the bento grid. Deliberately the
+   * same words as `header.briefCta` and `footer.briefLink`, because it is the
+   * same destination (the landing's `#brief`) — a third name for one target
+   * would read as a third offer.
+   */
+  readonly ctaLabel: string;
   readonly publishedPrice: WayOfWorkingItem;
   readonly noMiddlemen: WayOfWorkingItem;
   readonly approvalGates: WayOfWorkingItem;

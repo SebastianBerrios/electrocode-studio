@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" role="img">
+  <rect width="640" height="400" fill="#edf2ec"/>
+
+  <!-- Orbiting share targets -->
+  <circle cx="150" cy="140" r="34" fill="#dde8dc"/>
+  <circle cx="150" cy="140" r="12" fill="#a9c2a8"/>
+  <circle cx="118" cy="270" r="26" fill="#dde8dc"/>
+  <circle cx="118" cy="270" r="9" fill="#a9c2a8"/>
+  <circle cx="502" cy="176" r="30" fill="#dde8dc"/>
+  <circle cx="502" cy="176" r="10" fill="#a9c2a8"/>
+  <circle cx="522" cy="300" r="22" fill="#dde8dc"/>
+  <circle cx="522" cy="300" r="8" fill="#a9c2a8"/>
+
+  <!-- Phone. Extends past the bottom edge so the card crops it. -->
+  <rect x="226" y="40" width="188" height="400" rx="30" fill="#ffffff" stroke="#d7e2d6" stroke-width="2"/>
+  <rect x="292" y="56" width="56" height="8" rx="4" fill="#e4ede3"/>
+
+  <circle cx="320" cy="122" r="28" fill="#4e8256"/>
+  <rect x="278" y="166" width="84" height="12" rx="6" fill="#2f3d33"/>
+  <rect x="292" y="188" width="56" height="8" rx="4" fill="#c8d8c6"/>
+
+  <rect x="250" y="216" width="140" height="38" rx="14" fill="#2f3d33"/>
+  <rect x="250" y="264" width="140" height="38" rx="14" fill="#edf2ec" stroke="#d7e2d6" stroke-width="2"/>
+  <rect x="250" y="312" width="140" height="38" rx="14" fill="#edf2ec" stroke="#d7e2d6" stroke-width="2"/>
+  <rect x="250" y="360" width="140" height="38" rx="14" fill="#edf2ec" stroke="#d7e2d6" stroke-width="2"/>
+  <rect x="286" y="230" width="68" height="10" rx="5" fill="#a9c2a8"/>
+  <rect x="286" y="278" width="68" height="10" rx="5" fill="#c8d8c6"/>
+  <rect x="286" y="326" width="68" height="10" rx="5" fill="#c8d8c6"/>
+  <rect x="286" y="374" width="68" height="10" rx="5" fill="#c8d8c6"/>
+</svg>

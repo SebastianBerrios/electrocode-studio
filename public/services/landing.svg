@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" role="img">
+  <rect width="640" height="400" fill="#edf2ec"/>
+  <!-- Browser frame. It runs past the bottom edge on purpose, so the card
+       crops it like a real screenshot instead of showing a floating box. -->
+  <rect x="40" y="36" width="560" height="400" rx="16" fill="#ffffff" stroke="#d7e2d6" stroke-width="2"/>
+  <path d="M40 52a16 16 0 0 1 16-16h528a16 16 0 0 1 16 16v22H40z" fill="#e4ede3"/>
+  <circle cx="62" cy="55" r="4.5" fill="#b9cbb8"/>
+  <circle cx="78" cy="55" r="4.5" fill="#b9cbb8"/>
+  <circle cx="94" cy="55" r="4.5" fill="#b9cbb8"/>
+  <rect x="118" y="47" width="180" height="16" rx="8" fill="#f3f7f2"/>
+
+  <!-- Hero copy -->
+  <rect x="76" y="112" width="236" height="20" rx="10" fill="#2f3d33"/>
+  <rect x="76" y="144" width="168" height="20" rx="10" fill="#4e8256"/>
+  <rect x="76" y="186" width="216" height="9" rx="4.5" fill="#c8d8c6"/>
+  <rect x="76" y="203" width="184" height="9" rx="4.5" fill="#c8d8c6"/>
+  <rect x="76" y="220" width="146" height="9" rx="4.5" fill="#c8d8c6"/>
+  <rect x="76" y="250" width="126" height="36" rx="18" fill="#2f3d33"/>
+  <rect x="214" y="250" width="104" height="36" rx="18" fill="none" stroke="#b9cbb8" stroke-width="2"/>
+
+  <!-- Hero visual -->
+  <rect x="356" y="112" width="212" height="174" rx="14" fill="#dde8dc"/>
+  <circle cx="410" cy="158" r="16" fill="#c0d3be"/>
+  <path d="M368 262l52-58 40 42 30-28 46 44z" fill="#a9c2a8"/>
+
+  <!-- Proof row -->
+  <rect x="76" y="318" width="152" height="96" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="244" y="318" width="152" height="96" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="412" y="318" width="152" height="96" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="96" y="342" width="72" height="9" rx="4.5" fill="#c8d8c6"/>
+  <rect x="264" y="342" width="72" height="9" rx="4.5" fill="#c8d8c6"/>
+  <rect x="432" y="342" width="72" height="9" rx="4.5" fill="#c8d8c6"/>
+</svg>

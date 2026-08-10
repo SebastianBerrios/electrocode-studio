@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" role="img">
+  <rect width="640" height="400" fill="#edf2ec"/>
+  <rect x="48" y="56" width="544" height="288" rx="20" fill="#ffffff" stroke="#d7e2d6" stroke-width="2"/>
+
+  <!-- Sheet header: this is a published document, not a private quote -->
+  <rect x="80" y="90" width="188" height="12" rx="6" fill="#c8d8c6"/>
+  <line x1="80" y1="122" x2="560" y2="122" stroke="#e0e9df" stroke-width="2"/>
+
+  <!-- Price tag -->
+  <path d="M232 152a16 16 0 0 1 16 16v112a16 16 0 0 1-16 16h-96l-48-56a16 16 0 0 0 0-32l48-56z" fill="#4e8256"/>
+  <circle cx="122" cy="224" r="10" fill="#ffffff"/>
+  <rect x="152" y="198" width="72" height="14" rx="7" fill="#ffffff"/>
+  <rect x="152" y="230" width="48" height="14" rx="7" fill="#ffffff" opacity=".6"/>
+
+  <!-- One published figure per service line: every row shows its value -->
+  <rect x="300" y="178" width="132" height="12" rx="6" fill="#c8d8c6"/>
+  <rect x="460" y="166" width="96" height="32" rx="16" fill="#f5f8f4" stroke="#4e8256" stroke-width="2"/>
+  <rect x="478" y="177" width="60" height="10" rx="5" fill="#4e8256"/>
+
+  <rect x="300" y="234" width="108" height="12" rx="6" fill="#c8d8c6"/>
+  <rect x="460" y="222" width="96" height="32" rx="16" fill="#f5f8f4" stroke="#4e8256" stroke-width="2"/>
+  <rect x="478" y="233" width="60" height="10" rx="5" fill="#4e8256"/>
+
+  <rect x="300" y="290" width="150" height="12" rx="6" fill="#c8d8c6"/>
+  <rect x="460" y="278" width="96" height="32" rx="16" fill="#f5f8f4" stroke="#4e8256" stroke-width="2"/>
+  <rect x="478" y="289" width="60" height="10" rx="5" fill="#4e8256"/>
+</svg>

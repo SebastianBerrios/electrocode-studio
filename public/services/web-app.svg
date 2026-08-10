@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" role="img">
+  <rect width="640" height="400" fill="#edf2ec"/>
+  <rect x="40" y="36" width="560" height="400" rx="16" fill="#ffffff" stroke="#d7e2d6" stroke-width="2"/>
+  <path d="M40 52a16 16 0 0 1 16-16h528a16 16 0 0 1 16 16v22H40z" fill="#e4ede3"/>
+  <circle cx="62" cy="55" r="4.5" fill="#b9cbb8"/>
+  <circle cx="78" cy="55" r="4.5" fill="#b9cbb8"/>
+  <circle cx="94" cy="55" r="4.5" fill="#b9cbb8"/>
+
+  <!-- Sidebar -->
+  <rect x="40" y="74" width="132" height="362" fill="#2f3d33"/>
+  <rect x="60" y="98" width="60" height="12" rx="6" fill="#7fa585"/>
+  <rect x="60" y="134" width="92" height="10" rx="5" fill="#5c7862"/>
+  <rect x="60" y="160" width="76" height="10" rx="5" fill="#4a6250"/>
+  <rect x="60" y="186" width="84" height="10" rx="5" fill="#4a6250"/>
+  <rect x="60" y="212" width="68" height="10" rx="5" fill="#4a6250"/>
+  <rect x="60" y="238" width="80" height="10" rx="5" fill="#4a6250"/>
+
+  <!-- KPI tiles -->
+  <rect x="192" y="98" width="122" height="72" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="330" y="98" width="122" height="72" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="468" y="98" width="112" height="72" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="208" y="116" width="46" height="8" rx="4" fill="#c8d8c6"/>
+  <rect x="208" y="134" width="66" height="16" rx="8" fill="#2f3d33"/>
+  <rect x="346" y="116" width="46" height="8" rx="4" fill="#c8d8c6"/>
+  <rect x="346" y="134" width="58" height="16" rx="8" fill="#4e8256"/>
+  <rect x="484" y="116" width="46" height="8" rx="4" fill="#c8d8c6"/>
+  <rect x="484" y="134" width="62" height="16" rx="8" fill="#2f3d33"/>
+
+  <!-- Bar chart -->
+  <rect x="192" y="190" width="234" height="180" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <rect x="216" y="290" width="24" height="50" rx="6" fill="#c8d8c6"/>
+  <rect x="252" y="266" width="24" height="74" rx="6" fill="#c8d8c6"/>
+  <rect x="288" y="240" width="24" height="100" rx="6" fill="#4e8256"/>
+  <rect x="324" y="278" width="24" height="62" rx="6" fill="#c8d8c6"/>
+  <rect x="360" y="252" width="24" height="88" rx="6" fill="#c8d8c6"/>
+
+  <!-- Line chart -->
+  <rect x="442" y="190" width="138" height="180" rx="12" fill="#f5f8f4" stroke="#e0e9df" stroke-width="2"/>
+  <polyline points="462,318 490,286 518,300 546,252 562,268" fill="none" stroke="#4e8256" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="546" cy="252" r="6" fill="#2f3d33"/>
+</svg>

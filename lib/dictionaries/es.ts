@@ -51,7 +51,6 @@ export const es: Dictionary = {
   },
   services: {
     heading: "Servicios",
-    proofCta: "Ver proyectos",
     pricingCta: "Ver precios",
   },
   process: {
@@ -67,9 +66,14 @@ export const es: Dictionary = {
   // the repo — see `WayOfWorkingDictionary`'s doc comment for the key-by-key
   // provenance. No card may claim speed, quality, or scale.
   wayOfWorking: {
-    heading: "Cómo trabajamos",
+    eyebrow: "Compromisos del estudio",
+    // "trabajamos" is what the line turns on — the section is about the manner,
+    // not about the fact that work happens — so it is the word that carries
+    // the colour. Same split as `hero.heading` above.
+    heading: { lead: "Cómo", accent: "trabajamos" },
     intro:
       "Lo que puedes esperar del estudio antes de empezar, escrito antes de empezar.",
+    ctaLabel: "Cuéntanos tu proyecto",
     publishedPrice: {
       title: "Precio publicado",
       body: "Cada línea de servicio tiene un precio de referencia visible en la web. No hay que pedir una cotización para saber en qué rango estás.",
