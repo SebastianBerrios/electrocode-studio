@@ -17,11 +17,13 @@ import type { Locale } from "@/lib/content/locales";
  * one sentence three times spent the row's visual weight on the least
  * informative thing in it. The commitment itself is not dropped from the site,
  * which is the only reason removing it is safe: the "Avanzas cuando apruebas"
- * card in `components/sections/way-of-working.tsx` states it in full, and this
- * section's own approval-deadline paragraph below still names the act of
- * approving a pending phase. The flag stays in `lib/content/process.ts` — it
- * is a domain fact about the engagement, not a rendering detail, and dropping
- * it there would lose the data, not just the badge.
+ * card in `components/sections/way-of-working.tsx` states it in full. (This
+ * used to also cite the approval-deadline paragraph that closed this section;
+ * that paragraph is gone now — see the note below — so `way-of-working.tsx`
+ * is the sole remaining home of the commitment.) The flag stays in
+ * `lib/content/process.ts` — it is a domain fact about the engagement, not a
+ * rendering detail, and dropping it there would lose the data, not just the
+ * badge.
  *
  * `ProcessDictionary.approvalBadge` (`lib/dictionaries/types.ts`) consequently
  * has no consumer left. It is deliberately not deleted in the same pass: it is
@@ -29,11 +31,23 @@ import type { Locale } from "@/lib/content/locales";
  * that contract rather than to this component, and it belongs to whoever
  * decides the badge is gone for good rather than parked.
  *
- * `PROCESS.revisionRoundsIncluded` is read from the data module, not
- * hardcoded — see that module's doc comment for why this is the concrete
- * value that satisfies `specs/landing-narrative/spec.md`'s "Proceso Section
- * Contract" data-driven mechanism, and why a client-facing response-time
- * commitment is deliberately absent rather than invented.
+ * **The terms paragraphs below the sequence are gone too**, and for the same
+ * class of reason: the revision-rounds sentence and the approval-deadline
+ * sentence were a wall of fine print closing a section whose whole job is to
+ * show the five-step shape at a glance. The revision-rounds commitment is not
+ * lost with them — `components/sections/way-of-working.tsx` states it in full
+ * through the `wayOfWorking.revisionRounds` card ("Cada proyecto incluye N
+ * rondas de revisión… Las adicionales se cotizan aparte"), so this section was
+ * repeating, almost verbatim, a claim the visitor meets two sections later.
+ *
+ * The approval-deadline sentence has no such second home: dropping it removes
+ * the "5 días hábiles / el proyecto se pausa y la fecha se recalcula" term from
+ * the site entirely. That is a commercial decision taken deliberately, not an
+ * oversight of this refactor. `PROCESS.clientApprovalDeadlineBusinessDays` and
+ * `PROCESS.revisionRoundsIncluded` both stay in `lib/content/process.ts`, and
+ * `ProcessDictionary`'s four now-unused copy keys stay in the dictionary — same
+ * discipline as `approvalBadge` above: they are domain facts and shared-contract
+ * keys, so deleting them is somebody else's decision, not this component's.
  *
  * No link/CTA in this section: nothing in the studio's approved content for
  * this batch has a live target to point at from here.
@@ -45,10 +59,6 @@ import type { Locale } from "@/lib/content/locales";
  * five-phase, approval-gated sequence itself), never through implied
  * headcount (design.md §4.4 / landing-narrative spec's "Copy Voice
  * Constraint").
- *
- * **Approval-deadline addition**: renders
- * `PROCESS.clientApprovalDeadlineBusinessDays` and its pause/recalculation
- * consequence — stated up front, not raised later as a complaint.
  *
  * ---
  *
@@ -150,11 +160,7 @@ const PHASE_ICONS: Record<ProcessPhaseId, LucideIcon> = {
 
 export function Process({ locale }: { locale: Locale }) {
   const { process } = getDictionary(locale);
-  const {
-    phases,
-    revisionRoundsIncluded,
-    clientApprovalDeadlineBusinessDays,
-  } = PROCESS;
+  const { phases } = PROCESS;
 
   return (
     <section id="proceso" className="py-20 md:py-32">
@@ -258,17 +264,6 @@ export function Process({ locale }: { locale: Locale }) {
             );
           })}
         </ol>
-
-        <div className="mx-auto mt-14 max-w-3xl text-center">
-          <p className="text-sm text-muted-foreground">
-            {revisionRoundsIncluded} {process.revisionsLabel}{" "}
-            {process.revisionsExtra}
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {process.approvalDeadlinePrefix} {clientApprovalDeadlineBusinessDays}{" "}
-            {process.approvalDeadlineSuffix}
-          </p>
-        </div>
       </div>
     </section>
   );
