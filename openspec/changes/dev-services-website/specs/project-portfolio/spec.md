@@ -44,55 +44,98 @@ The published, `featured` project set MUST contain between 4 and 8 distinct entr
 - THEN a count below 4 or above 8 fails the build — the floor is a checked
   invariant, not merely a reviewer's expectation
 
-### Requirement: Hero Projection Preserves Prop Contract
+### Requirement: Showcase Projection Is Derived, Not Literal
 
-`HeroParallax` MUST keep receiving `{ title, link, thumbnail }[]`. The hero consumes a projection of `Project[]` computed from the content model — it MUST NOT receive the full `Project` entity, and the projection function (not hand-duplicated literals) MUST be the data source.
+> Amended 2026-08-09 by the showcase-marquee change. This was "Hero Projection
+> Preserves Prop Contract", and it required `HeroParallax` to keep receiving
+> `{ title, link, thumbnail }[]`. That component was deleted, so a requirement
+> to preserve its prop shape now protects nothing and would block a projection
+> from carrying what its real consumer needs — which is exactly what happened:
+> `toShowcaseTiles()` replaces the `.src` string with the `StaticImageData`
+> itself (so `next/image` gets intrinsic dimensions and a blur placeholder)
+> and the reused title with the asset's real per-locale alt text.
+>
+> The part of this requirement that was never about the component survives
+> verbatim below: the rendering surface gets a PROJECTION, never the entity,
+> and never a hand-written literal.
 
-#### Scenario: Hero prop shape is unchanged
+The landing's project showcase MUST consume a projection of `Project[]`
+computed from the content model. It MUST NOT receive the full `Project`
+entity, and the projection function — not hand-duplicated literals — MUST be
+the data source.
 
-- GIVEN `HeroParallax`'s prop type
-- WHEN compared before and after this change
-- THEN it is still `{ title: string; link: string; thumbnail: string }[]`
+#### Scenario: The showcase renders from curated data, not a hardcoded array
 
-### Requirement: Row Derivation From Array Length
+- GIVEN the curated project set in the content model
+- WHEN the showcase renders
+- THEN its tiles are derived from that data by a projection function, not a literal array in a component
 
-`HeroParallax` MUST derive its row count and row size from the length of the received array rather than fixed `0-5/5-10/10-15` slices, so a curated 6–8 entry set renders without empty rows. The exact derivation algorithm is a `sdd-design` decision; this requirement constrains only the observable outcome.
+### Requirement: Showcase Track Coverage
 
-#### Scenario: Six entries render without an empty row
+> Added 2026-08-09, replacing "Row Derivation From Array Length". That
+> requirement constrained `HeroParallax`'s row splitting so a 6–8 entry set
+> never produced an empty row, and its scenarios pinned the `useSpring`/
+> `useTransform` motion values. The component is gone and the motion with it —
+> the marquee is CSS `@keyframes`, not scroll-linked springs — so those
+> scenarios no longer describe anything. The underlying concern does survive,
+> and it is the same concern in a new form: a set too small for the layout
+> leaves visible emptiness. For a parallax that was an empty row; for a
+> marquee it is a blank strip at the trailing edge of the loop.
 
-- GIVEN 6 curated entries
-- WHEN the hero renders
-- THEN no row is empty
+Each marquee track MUST be at least as wide as the widest supported viewport,
+so no blank strip appears at any point in the loop. This is a joint property
+of the tile count and the tile width; neither alone determines it.
 
-#### Scenario: Eight entries render without an empty row
+#### Scenario: A track outruns the viewport
 
-- GIVEN 8 curated entries
-- WHEN the hero renders
-- THEN no row is empty
+- GIVEN the curated set at its minimum size
+- WHEN a marquee track's width is measured against a 1920px viewport
+- THEN the track is wider
 
-#### Scenario: Motion values are preserved
+#### Scenario: The tile-count half is enforced at build time
 
-- GIVEN the existing `useSpring`/`useTransform` values and perspective entrance
-- WHEN the row derivation changes
-- THEN those motion values remain functionally equivalent (same inputs produce the same visual behavior)
+- GIVEN a curated set that drops below the showcase floor
+- WHEN the production build runs
+- THEN it fails, naming the floor and why the marquee needs it
 
 ### Requirement: Conditional Card Link Target
 
-Each `ProductCard`'s link target MUST depend on whether the link is internal (a case-study route) or external (a live client URL). Internal links MUST NOT open in a new tab; external links MAY.
+Each showcase tile's link target MUST depend on whether the link is internal (a case-study route) or external (a live client URL). Internal links MUST NOT open in a new tab; external links MAY.
 
 #### Scenario: Internal case-study link stays in the same tab
 
 - GIVEN a project with `evidence` of `gated`, `not-deployed`, or `no-visual`
-- WHEN its hero card link is inspected
+- WHEN its tile link is inspected
 - THEN it does not carry `target="_blank"` and navigates to the internal case-study route
 
 #### Scenario: External live link may open in a new tab
 
 - GIVEN a project with `evidence: live` and a working external URL
-- WHEN its hero card link is inspected
+- WHEN its tile link is inspected
 - THEN it points at the external URL
 
 ### Requirement: Evidence State Rendering
+
+> Amended 2026-08-09 by the showcase-marquee change. The table is unchanged in
+> substance; what changed is where each state can be satisfied.
+>
+> The caveat that `gated` and `not-deployed` require used to be a paragraph
+> under the screenshot in the portfolio grid. A tile in a moving row cannot
+> carry a paragraph, so on the showcase it is a chip pinned to the image, and
+> the project's own full `evidence.disclosure` line is rendered on the case
+> study the tile links to. The obligation is unchanged and non-negotiable —
+> the screenshot must never travel without its caveat, because a sanitized
+> internal dashboard shown bare reads as a public product. Only the form the
+> caveat takes is surface-dependent.
+>
+> `no-visual` is the state the marquee cannot satisfy at all: a tile IS a
+> screenshot. Those projects are filtered out of the showcase rather than
+> faked into it, which is the same rule the hero followed for the same reason
+> — but with the grid gone it now means such a project has no landing surface
+> at all. That is an accepted, recorded consequence, not an oversight: it is
+> reversed by obtaining a consented capture, not by code. The build still
+> fails if a project is absent for ANY other reason (see "Showcase Consistency
+> With The Curated Set").
 
 Each project MUST render according to exactly one of four evidence states.
 
@@ -101,7 +144,7 @@ Each project MUST render according to exactly one of four evidence states.
 | `live` | Screenshot + external link |
 | `gated` | Authorized sanitized screenshot + explicit note that the product sits behind a login |
 | `not-deployed` | Locally captured screenshot + note that no public deployment exists |
-| `no-visual` | Text-only card that still reads as complete |
+| `no-visual` | Text-only card that still reads as complete, on any surface that can render one |
 
 #### Scenario: `no-visual` degrades honestly
 
@@ -109,49 +152,59 @@ Each project MUST render according to exactly one of four evidence states.
 - WHEN its card renders
 - THEN it shows no broken image frame and no gray box passed off as a screenshot
 
-### Requirement: Portfolio Grid Consistency With Hero
+#### Scenario: A screenshot never travels without its caveat
+
+- GIVEN a project with `evidence` of `gated` or `not-deployed`
+- WHEN its screenshot renders on any surface
+- THEN the caveat for that state renders with it, in whatever form that surface supports
+
+### Requirement: Showcase Consistency With The Curated Set
 
 > Amended after `sdd-verify` finding W10. This requirement originally demanded
 > the grid and hero render "the same set of projects — no project appears in one
 > but not the other". That is not achievable and was never intended to be: the
 > hero is an image-driven parallax, so a project with no visual evidence cannot
 > appear there without rendering a broken or fake image frame — exactly what the
-> `no-visual` evidence state exists to prevent. Design §5 and `toHeroProducts()`
-> therefore exclude those projects from the hero. Left unamended this would have
+> `no-visual` evidence state exists to prevent. Left unamended this would have
 > surfaced as a false CRITICAL when PR 3a ships the grid.
 >
-> The real intent — that the hero never shows something the grid hides, and that
-> any divergence has exactly one honest cause — is restated below as a checkable
-> subset rule.
+> Amended again 2026-08-09 by the showcase-marquee change, which retitled it
+> from "Portfolio Grid Consistency With Hero". The grid is gone and the hero
+> no longer shows work, so there are no longer two rendered surfaces to
+> compare. The subset rule is now measured against the curated set itself —
+> and it matters MORE than it did, not less. A divergence used to mean the
+> page contradicted itself somewhere a reader could see. With the showcase as
+> the only place client work appears on the landing, a project silently
+> dropped from it has vanished from the site with nothing left to contradict.
 
-The hero's entries MUST be a **subset** of the grid's entries, both drawn from
-the same curated (`featured: true`) set.
+The showcase's entries MUST be a **subset** of the curated (`featured: true`)
+set.
 
-Every project the hero shows MUST also appear in the grid. A project MAY appear
-in the grid but not the hero, and the ONLY permitted reason is that it has no
-visual evidence (`evidence.state: "no-visual"`), because the hero cannot render
-a card without a thumbnail honestly.
+Every project in the curated set with visual evidence MUST appear in the
+showcase. A curated project MAY be absent from it, and the ONLY permitted
+reason is that it has no visual evidence (`evidence.state: "no-visual"`),
+because a tile cannot honestly render without a screenshot.
 
-Any other divergence is a defect: it means the two surfaces disagree about what
-the studio has done.
+Any other divergence is a defect: it means the landing is hiding work the
+content model says the studio has done.
 
-#### Scenario: Hero is a subset of the grid
+#### Scenario: The showcase draws only from the curated set
 
 - GIVEN the featured project set
-- WHEN the hero's entries and the grid's entries are compared
-- THEN every hero entry appears in the grid
+- WHEN the showcase's entries are compared against it
+- THEN every showcase entry appears in the curated set
 
-#### Scenario: A grid-only project is grid-only because it has no image
+#### Scenario: An absent project is absent because it has no image
 
-- GIVEN a project present in the grid but absent from the hero
+- GIVEN a curated project absent from the showcase
 - WHEN its evidence state is inspected
 - THEN it is `no-visual`
 
-#### Scenario: A project with imagery cannot be dropped from the hero
+#### Scenario: A project with imagery cannot be dropped from the showcase
 
 - GIVEN a featured project whose evidence carries media
-- WHEN the hero projection is built
-- THEN that project is present in the hero, and its absence fails the build
+- WHEN the showcase projection is built
+- THEN that project is present in it, and its absence fails the build
 
 ### Requirement: No Self-Referential Links
 

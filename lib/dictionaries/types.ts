@@ -142,11 +142,20 @@ export type ServicesDictionary = {
  * labels `components/portfolio/evidence.tsx` renders alongside each
  * project's own specific `evidence.disclosure` text — structural UI copy,
  * not a domain fact, so it belongs here rather than in `lib/content/**`.
+ *
+ * `gatedBadge`/`notDeployedBadge` say the same thing in the length a marquee
+ * tile can carry (`components/ui/project-marquee.tsx`). They are NOT a
+ * softened restatement: "Evidence State Rendering" requires the caveat to
+ * travel with the screenshot, and a tile has room for a chip, not a
+ * paragraph. The full note and the project's own `evidence.disclosure` are
+ * still rendered in full on the case study the tile links to.
  */
 export type PortfolioDictionary = {
   readonly heading: string;
   readonly gatedNote: string;
   readonly notDeployedNote: string;
+  readonly gatedBadge: string;
+  readonly notDeployedBadge: string;
 };
 
 /**

@@ -6,7 +6,17 @@ import { ServiceBadge } from "./service-badge";
 import { Evidence } from "./evidence";
 
 /**
- * Server Component: one card in the landing's Proyectos grid. Task 3.3/3.4.
+ * Server Component: one full-information project card. Task 3.3/3.4.
+ *
+ * **Currently rendered nowhere.** It was the Proyectos grid's card, and the
+ * grid was replaced by the showcase marquee
+ * (`components/sections/portfolio.tsx`). It is kept rather than deleted with
+ * its consumer because it is the only rendering of a project that carries its
+ * service line, evidence disclosure and summary together — which is exactly
+ * what a `/[locale]/proyectos` index would need, and what the marquee's tiles
+ * deliberately cannot show. `lib/content/projections.ts`'s
+ * `toPortfolioCards()` is kept for the same reason and is still swept by two
+ * build invariants, so this card's data contract cannot rot while it waits.
  *
  * **Link-vs-non-link, and why this never uses `next/link` for the internal
  * case.** `card.link` is `undefined` whenever the project's evidence is not
@@ -18,7 +28,7 @@ import { Evidence } from "./evidence";
  * renders it with a plain `<a>`, never `<Link>`: `typedRoutes` cannot verify
  * a route that isn't generated yet, and adding an `as Route` cast here would
  * be a THIRD waiver of that guarantee in this codebase (the other two are
- * `hero-parallax.tsx`'s `product.link` — permanent, compensated by
+ * `project-marquee.tsx`'s `tile.link` — permanent, compensated by
  * `checkInternalLinksResolve` — and the temporary one at `lib/brief/
  * submit.ts`, removed by task 6.9b). `lib/content/invariants.ts`'s
  * `checkPortfolioLinksOnlyToPublishedCaseStudies` is this card's
@@ -27,8 +37,8 @@ import { Evidence } from "./evidence";
  * branch to `<Link>` for prefetching is a natural follow-up, not a defect.
  *
  * A `live` project's link is always its external URL — see `portfolioLink()`
- * — rendered with `target="_blank" rel="noopener noreferrer"`, matching the
- * hero's `ProductCard` convention (design.md D6).
+ * — rendered with `target="_blank" rel="noopener noreferrer"`, the same
+ * convention the showcase tile follows (design.md D6).
  *
  * **Non-link cards must not look clickable** (tasks.md 3.V7): no hover
  * affordance, no pointer cursor, no wrapping interactive element at all.

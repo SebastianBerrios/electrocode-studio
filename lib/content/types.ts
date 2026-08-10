@@ -114,10 +114,13 @@ export type Evidence =
 
 /**
  * A portfolio entry. Superset of the legacy `{ title, link, thumbnail }`
- * shape documented in `openspec/config.yaml` — `link` and `thumbnail` are
- * preserved verbatim so existing consumers (`HeroParallax`'s `ProductCard`)
- * keep working unchanged. See specs/content-model/spec.md, "Legacy shape is
- * preserved, not replaced".
+ * shape documented in `openspec/config.yaml`, which `HeroParallax`'s
+ * `ProductCard` consumed directly. That component is gone and no consumer
+ * takes the legacy shape any more — `lib/content/projections.ts` projects
+ * this type into whatever each surface actually needs — but this type never
+ * depended on it either way: it has always been the richer model, and the
+ * projections are what adapted. See specs/content-model/spec.md, "Legacy
+ * shape is preserved, not replaced".
  *
  * Two fields are deliberately absent from this shape, both per design.md §5:
  *

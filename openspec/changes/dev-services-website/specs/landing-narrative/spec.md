@@ -33,13 +33,37 @@ There is deliberately NO separate closing CTA band, even though the reference di
 
 ### Requirement: Hero Section Contract
 
-The hero MUST reuse `HeroParallax` and display real, curated shipped work, plus a statement of what is sold.
+> Amended 2026-08-09 by the showcase-marquee change. This requirement used to
+> read "The hero MUST reuse `HeroParallax` and display real, curated shipped
+> work, plus a statement of what is sold." Both halves of that are gone, and
+> deliberately: the projects moved out of the hero and into section 4 as two
+> counter-scrolling marquee rows, and `HeroParallax` was deleted with its last
+> consumer. The duplication is what motivated the change — the same four
+> screenshots appeared above the fold and again in Proyectos, so the portfolio
+> arrived before the offer and then arrived twice, and the hero's own copy had
+> to be defended from the track beneath it with an opaque panel and a z-index.
+>
+> Naming a COMPONENT in a narrative requirement was the underlying mistake.
+> What the landing actually owes the visitor at section 1 is a statement of
+> what is sold and a way to act on it; which component renders it is a design
+> decision. Restated that way below.
 
-#### Scenario: Hero renders from curated data, not a hardcoded array
+The hero MUST state what the studio sells and offer both the conversion path
+and the proof path. It MUST NOT be the surface that displays client work —
+that belongs to section 4 (see "Proyectos Section Contract"), and no project
+may appear in both.
+
+#### Scenario: Hero states the offer and routes onward
+
+- GIVEN a visitor arriving at the landing
+- WHEN the hero renders
+- THEN it presents what is sold, a conversion CTA, and a link to the proof section
+
+#### Scenario: The hero shows no client work
 
 - GIVEN the curated project set in the content model
 - WHEN the hero renders
-- THEN its cards are derived from that data, not a literal array in `app/page.tsx`
+- THEN no project screenshot, title, or card appears above the fold
 
 ### Requirement: Servicios Section Contract
 
@@ -64,12 +88,37 @@ The Proceso section MUST describe a defined sequence (discovery, proposal, build
 
 ### Requirement: Proyectos Section Contract
 
-The Proyectos section MUST render the curated 6–8 project grid and hand off to individual case studies.
+> Amended 2026-08-09 by the showcase-marquee change, on two points.
+>
+> **"Grid" → "showcase".** The section renders two continuously scrolling rows
+> of screenshots running in opposite directions, not a three-column card grid.
+> The requirement never depended on the grid layout; it depended on the
+> section showing the curated set and handing off to case studies, which the
+> marquee does.
+>
+> **"6–8" → the curated set.** That number contradicted "Curated Set Size" in
+> `specs/project-portfolio/spec.md`, which was itself amended to 4–8 on
+> 2026-07-31. It is not restated here at all now — one requirement owns the
+> size, and this one defers to it, so the two cannot drift apart again.
+>
+> One consequence is recorded rather than hidden: a marquee tile IS a
+> screenshot, so `no-visual` projects cannot appear in this section at all.
+> The grid could carry them as text-only cards; the marquee cannot. See
+> "Evidence State Rendering" in `specs/project-portfolio/spec.md`.
 
-#### Scenario: Grid links to case studies, not external URLs for unlinkable work
+The Proyectos section MUST render the curated project set and hand off to
+individual case studies.
+
+#### Scenario: The section shows the curated set
+
+- GIVEN the curated (`featured: true`) project set
+- WHEN the Proyectos section renders
+- THEN every project in it with visual evidence appears, and its absence for any other reason fails the build
+
+#### Scenario: Unlinkable work links to case studies, not external URLs
 
 - GIVEN a project with `evidence` of `gated`, `not-deployed`, or `no-visual`
-- WHEN its grid card is activated
+- WHEN its entry is activated
 - THEN it opens the internal case-study route, not an external link
 
 ### Requirement: Autoridad Section Placement

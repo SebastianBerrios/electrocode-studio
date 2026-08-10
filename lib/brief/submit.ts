@@ -115,7 +115,7 @@ export async function submitBrief(
   // `/{locale}/gracias` did not exist as a page yet. Task 6.8 (this batch)
   // created `app/[locale]/gracias/page.tsx`, so `typedRoutes` now checks
   // this exact call site again — the whole point of the cast being temporary
-  // rather than a second permanent waiver alongside `product.link as Route`
-  // in `components/ui/hero-parallax.tsx`.
+  // rather than a second permanent waiver alongside `tile.link as Route` in
+  // `components/ui/project-marquee.tsx`.
   redirect(`/${locale}/gracias`);
 }

@@ -18,7 +18,7 @@
  * A drawn illustration cannot be mistaken for a claim about a real client, so
  * every line gets one and the section stops depending on the portfolio's
  * shape. The consent-gated derivation is unchanged everywhere it belongs:
- * `toPortfolioCards()`, `toHeroProducts()`, and the case studies still read
+ * `toPortfolioCards()`, `toShowcaseTiles()`, and the case studies still read
  * from `publishableProjects()`.
  *
  * Static `import`s, same rule as `lib/content/projects/media.ts`: a missing

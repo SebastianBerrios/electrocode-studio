@@ -342,6 +342,45 @@
     display: inline-block;
     animation: reveal-word 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  /*
+   * The Proyectos showcase marquee (`components/ui/project-marquee.tsx`).
+   *
+   * Two sibling tracks holding identical content scroll as one: when the
+   * leading track has translated its full width away, the trailing one is
+   * exactly where the leading one began, so the loop restarts on an identical
+   * frame and reads as continuous.
+   *
+   * `--marquee-gap` is why the translation is `-100%` PLUS a length rather
+   * than `-100%`. The tracks are laid out by the wrapper's flex `gap`, which
+   * `100%` — the element's own width — does not include, so translating by
+   * exactly `-100%` leaves the trailing track one gap short of the leading
+   * one's start and the row visibly stutters once per cycle. Both must stay
+   * in sync with the `gap-6` (1.5rem) the component sets on the wrapper AND
+   * inside each track.
+   */
+  .marquee {
+    --marquee-gap: 1.5rem;
+  }
+
+  .marquee-track {
+    animation: marquee-left var(--marquee-duration, 45s) linear infinite;
+  }
+
+  .marquee-track-reverse {
+    animation-name: marquee-right;
+  }
+
+  /*
+   * A row that keeps moving under the pointer is a row you cannot read, and
+   * one that keeps moving under the keyboard focus ring drags the focused
+   * link off-screen mid-tab. `:focus-within` is not a nicety here — without
+   * it the section is keyboard-hostile.
+   */
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes reveal-up {
@@ -366,14 +405,32 @@
   }
 }
 
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--marquee-gap)));
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(calc(-100% - var(--marquee-gap)));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 /*
  * Hard constraint: every animation must be disabled or reduced under
  * `prefers-reduced-motion`. This covers every CSS animation/transition
  * site-wide, including `.reveal` above and `tw-animate-css`'s utilities.
- * Motion-library components (`hero-parallax.tsx`, the Aceternity-derived
- * `components/ui/*`) additionally call `useReducedMotion()` from
- * `motion/react` at the component level, since a scroll-linked `MotionValue`
- * is not a CSS animation this media query can reach.
+ * The Aceternity-derived `components/ui/*` that use `motion/react`
+ * additionally call `useReducedMotion()` at the component level, since a
+ * `MotionValue` is applied as an inline style and is not a CSS animation this
+ * media query can reach.
  */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -383,5 +440,26 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /*
+   * The marquee needs its own rule, because the blanket override above
+   * degrades it WRONGLY rather than not at all: collapsing the duration to
+   * 0.01ms lands the animation on its final frame, which for this keyframe
+   * pair means the leading track has already translated a full width off to
+   * the left. The visitor would be left staring at the trailing copy with the
+   * real, linked tiles parked outside the viewport.
+   *
+   * Cancelling the animation outright puts every track back at its natural
+   * position, and `overflow-x: auto` hands the visitor the control the
+   * animation was providing: the row is still fully explorable, just by
+   * scrolling it deliberately instead of waiting for it to come around.
+   */
+  .marquee-track {
+    animation: none !important;
+  }
+
+  .marquee {
+    overflow-x: auto;
   }
 }

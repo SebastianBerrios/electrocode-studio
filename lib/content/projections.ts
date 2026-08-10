@@ -12,17 +12,47 @@ import type { ServiceLine } from "./service-lines";
 import { SERVICE_LINES } from "./service-lines";
 import { SERVICE_ILLUSTRATIONS } from "./service-illustrations";
 import { PROJECTS } from "./projects";
-import { caseStudyPath, landingAnchor } from "@/lib/links";
+import { caseStudyPath } from "@/lib/links";
 
 /**
- * The exact prop shape `HeroParallax` has always consumed. Preserved
- * unchanged per `specs/project-portfolio/spec.md`, "Hero Projection
- * Preserves Prop Contract".
+ * The evidence caveat a showcase tile must carry ON the tile itself.
+ *
+ * `live` needs none — the tile links to the running site, which is the proof.
+ * `gated` and `not-deployed` are the two states whose honesty depends on a
+ * caveat travelling WITH the screenshot (`specs/project-portfolio/spec.md`,
+ * "Evidence State Rendering"), so the projection names the state and
+ * `components/ui/project-marquee.tsx` renders the locale's copy for it.
+ * `no-visual` never reaches this type — those projects have no image and are
+ * filtered out of the showcase entirely.
  */
-export type HeroProduct = {
+export type TileCaveat = "gated" | "not-deployed";
+
+/**
+ * One tile in the landing's Proyectos marquee
+ * (`components/ui/project-marquee.tsx`).
+ *
+ * Replaces the former `HeroProduct` (`{ title, link, thumbnail }`), which
+ * existed to satisfy `HeroParallax`'s legacy prop contract — that component
+ * is gone, so the shape no longer has to be a lowest common denominator:
+ *
+ * - `image` is the `StaticImageData` itself rather than a `.src` string, so
+ *   `next/image` gets intrinsic dimensions and a blur placeholder instead of
+ *   an opaque path.
+ * - `alt` is the asset's real per-locale alt text rather than the project
+ *   title reused as a description.
+ * - `link` is `string | undefined`, not `string`. The hero's `publicLink()`
+ *   fell back to the `#proyectos` anchor when a project had no honest
+ *   destination; a tile that lives INSIDE `#proyectos` and links to
+ *   `#proyectos` is a link to itself, so the showcase uses the portfolio's
+ *   stricter `portfolioLink()` and renders a non-link tile instead.
+ */
+export type ShowcaseTile = {
+  readonly slug: string;
   readonly title: string;
-  readonly link: string;
-  readonly thumbnail: string;
+  readonly link: string | undefined;
+  readonly image: MediaAsset["asset"];
+  readonly alt: string;
+  readonly caveat: TileCaveat | undefined;
 };
 
 /**
@@ -51,9 +81,12 @@ export type PortfolioCard = {
  * when the client may be named. Two projects can share one client — `blucafe`
  * (the public site) and `blu` (that client's internal management system) both
  * have `client: "Blu Café"` — so labelling by client produced two identical
- * hero cards. That was three defects from one root cause: ambiguous UI labels,
- * two images with identical `alt` text, and colliding React keys, since
- * `HeroParallax` keys its cards by `product.title`.
+ * cards. That was three defects from one root cause: ambiguous UI labels, two
+ * images with identical `alt` text, and colliding React keys, since the
+ * component of the day keyed its cards by title. (The React-key half is
+ * historical — `components/ui/project-marquee.tsx` keys by `slug` — but the
+ * other two are not, and `checkUniqueShowcaseTitles` now also depends on
+ * titles being unique to join two projections correctly.)
  *
  * The client is still named wherever the project's own title names it, e.g.
  * "Sistema de gestión interno de Blu Café". For the three projects whose
@@ -98,37 +131,17 @@ export function publicTitle(project: Project): string {
 }
 
 /**
- * The link a visitor should follow for this project, from any surface.
+ * A project's link, for every surface that renders one.
  *
- * Matches design.md §5's literal table now (`externalUrl` when
- * `evidence.state === 'live'`, else `caseStudyPath(locale, slug)` once
- * published): PR 5 ships `/[locale]/proyectos/[slug]`, so the temporary
- * anchor fallback this function used to apply unconditionally (see git
- * history — it deviated here because that route did not exist until this
- * PR) is now resolved. A project without a published case study still falls
- * back to the landing's portfolio anchor, the same pattern PR 1 established
- * for this exact situation (`app/page.tsx`'s former "Blu Finances" entry,
- * `link: "/#proyectos"`) — rendering a link at an address that does not
- * exist yet is the exact class of defect this change set exists to remove
- * (specs/site-shell/spec.md, "Zero Dead Internal Links").
- */
-function publicLink(locale: Locale, project: Project): string {
-  // A published case study wins over the client's live site.
-  //
-  // The previous order checked `live` first, so a project with BOTH sent every
-  // visitor to the client's website and the studio's own write-up appeared in
-  // zero hrefs across the whole site — reachable only from the sitemap
-  // (verify-report-final.md, finding C6). That is backwards: the case study is
-  // the studio's proof, and the client's live site is evidence cited INSIDE
-  // it, where the case study already links to it.
-  if (project.caseStudyPublished) return caseStudyPath(locale, project.slug);
-  if (project.evidence.state === "live") return project.evidence.externalUrl;
-  return landingAnchor(locale, "proyectos");
-}
-
-/**
- * The portfolio grid's link derivation — deliberately different from the
- * hero's `publicLink()` above.
+ * Formerly `portfolioLink()`, one of two link derivations in this file. The
+ * other — `publicLink()`, the hero's — differed in exactly one way: when a
+ * project had neither a live site nor a published case study it returned the
+ * `#proyectos` landing anchor instead of "no link". That fallback existed
+ * because the hero sat ABOVE the portfolio, so pointing at it was a real
+ * destination. The showcase marquee IS `#proyectos`, so the same fallback
+ * would now produce a tile linking to the section containing it. With its one
+ * distinguishing behaviour invalid, `publicLink()` was deleted rather than
+ * kept as a second name for this function.
  *
  * `live` evidence always links externally, unconditionally: that URL is an
  * independently-verified third-party site (e.g. task 1.H2's checks), so it
@@ -137,31 +150,26 @@ function publicLink(locale: Locale, project: Project): string {
  * table (`live` → "screenshot + external link").
  *
  * Every other evidence state (`gated`, `not-deployed`, `no-visual`) is a
- * candidate for an INTERNAL case-study link instead — but
- * `/[locale]/proyectos/[slug]` does not exist as a route in this repo state
- * at all (it ships in PR 5). Rendering a `<Link>`/`<a>` at that address
- * before the route exists is the exact class of defect this change set has
- * repeatedly had to fix (see this file's own `publicLink()` comment above,
- * and tasks.md's "Delivery order correction"). So this function returns
- * `undefined` — "no link" — unless `project.caseStudyPublished` is `true`.
+ * candidate for an INTERNAL case-study link instead — but only once that
+ * case study is actually published. Rendering a `<Link>`/`<a>` at an address
+ * that does not exist yet is the exact class of defect this change set has
+ * repeatedly had to fix (see tasks.md's "Delivery order correction"), so this
+ * function returns `undefined` — "no link" — unless
+ * `project.caseStudyPublished` is `true`.
  *
- * Today every project in `PROJECTS` has `caseStudyPublished: false`, so
- * every non-`live` grid card renders as a non-link — see tasks.md task 3.4's
- * critical constraint. `components/portfolio/project-card.tsx` is the
- * consumer that must not render an anchor when this returns `undefined`.
+ * Both consumers MUST NOT render an anchor when this returns `undefined`:
+ * `components/ui/project-marquee.tsx` (the showcase tile) and
+ * `components/portfolio/project-card.tsx`.
  */
 function portfolioLink(locale: Locale, project: Project): string | undefined {
-  // Same precedence as `publicLink()` above, and for the same reason: a
-  // published case study is the studio's own proof and must be reachable.
-  // See verify-report-final.md, finding C6.
+  // A published case study wins over the client's live site: the case study is
+  // the studio's own proof, and the client's live site is evidence cited
+  // INSIDE it, where the case study already links to it. The reverse order
+  // sent every visitor to the client's website and left the studio's write-up
+  // in zero hrefs across the whole site (verify-report-final.md, finding C6).
   if (project.caseStudyPublished) return caseStudyPath(locale, project.slug);
   if (project.evidence.state === "live") return project.evidence.externalUrl;
   return undefined;
-}
-
-/** The primary media asset's `.src`, or `undefined` for `no-visual`. */
-function primaryThumbnail(evidence: Evidence): string | undefined {
-  return evidence.state === "no-visual" ? undefined : evidence.media[0].asset.src;
 }
 
 /**
@@ -177,9 +185,9 @@ export function publishableProjects(): readonly Project[] {
 }
 
 /**
- * The curated, `featured` project set — the same set the hero and the
- * portfolio grid both project from. See specs/project-portfolio/spec.md,
- * "Portfolio Grid Consistency With Hero" and "Curated Set Size".
+ * The curated, `featured` project set — the set both `toShowcaseTiles()` and
+ * `toPortfolioCards()` project from. See specs/project-portfolio/spec.md,
+ * "Showcase Consistency With The Curated Set" and "Curated Set Size".
  *
  * Exported (remediation of `verify-report-final.md` finding C7) so
  * `lib/content/invariants.ts`'s `checkCuratedSetSize` reads the exact same
@@ -211,29 +219,51 @@ export function publishedCaseStudyProjects(): readonly Project[] {
 }
 
 /**
- * `HeroParallax`'s data source. Filters out `no-visual` projects — the
- * hero is an image grid, and a text-only card inside a parallax row is
- * incoherent (design.md §5). Those projects still appear in
- * `toPortfolioCards()`.
+ * The showcase marquee's data source — `components/sections/portfolio.tsx`,
+ * via `components/ui/project-marquee.tsx`.
+ *
+ * Successor to `toHeroProducts()`, which fed `HeroParallax`'s scroll-linked
+ * track at the top of the landing. That track is gone (see
+ * `components/sections/portfolio.tsx` for why the projects moved out of the
+ * hero and into two counter-rotating marquee rows), and with it the legacy
+ * `{ title, link, thumbnail }` prop contract this projection existed to
+ * satisfy.
+ *
+ * **`no-visual` projects are still filtered out, for the same reason as
+ * before.** A marquee tile IS a screenshot; a project with no consented
+ * capture cannot appear in one without a broken frame or a fake grey box,
+ * which is precisely what the `no-visual` state exists to prevent
+ * (`specs/project-portfolio/spec.md`, "`no-visual` degrades honestly").
+ * Unlike before, those projects no longer have a second landing surface to
+ * fall back to — the grid that used to carry them is what the marquee
+ * replaces. `toPortfolioCards()` still projects them for
+ * `lib/content/invariants.ts`, and `checkShowcaseIsSubsetOfCuratedSet` fails
+ * the build if any project is ever missing from the showcase for any OTHER
+ * reason than this one.
  */
-export function toHeroProducts(locale: Locale): readonly HeroProduct[] {
+export function toShowcaseTiles(locale: Locale): readonly ShowcaseTile[] {
   return featuredProjects()
     .filter((project) => project.evidence.state !== "no-visual")
     .toSorted((a, b) => a.order - b.order)
     .map((project) => {
-      const thumbnail = primaryThumbnail(project.evidence);
-      if (thumbnail === undefined) {
-        // Unreachable given the filter above; kept as a loud runtime check
-        // so a future edit to the filter fails immediately instead of
-        // shipping an empty `thumbnail` to `next/image`.
+      const { evidence } = project;
+      if (evidence.state === "no-visual") {
+        // Unreachable given the filter above — `Array.prototype.filter` does
+        // not narrow the element type, so this both restores the narrowing
+        // TypeScript loses and fails loudly if a future edit to that filter
+        // lets a media-less project through to `next/image`.
         throw new Error(
-          `Project "${project.slug}" has no media but was not filtered out of the hero projection.`,
+          `Project "${project.slug}" has no media but was not filtered out of the showcase projection.`,
         );
       }
+      const media = evidence.media[0];
       return {
+        slug: project.slug,
         title: publicTitle(project),
-        link: publicLink(locale, project),
-        thumbnail,
+        link: portfolioLink(locale, project),
+        image: media.asset,
+        alt: media.alt[locale],
+        caveat: evidence.state === "live" ? undefined : evidence.state,
       };
     });
 }
@@ -303,8 +333,20 @@ export function toServiceCards(locale: Locale): readonly ServiceCard[] {
 }
 
 /**
- * The landing's portfolio grid data source — the same curated set as the
- * hero, including `no-visual` entries the hero cannot show.
+ * The complete curated set, projected as full information cards — including
+ * the `no-visual` entries `toShowcaseTiles()` cannot show.
+ *
+ * **This has no renderer on the landing any more.** It fed the Proyectos
+ * grid, which the showcase marquee replaced. It is kept, rather than deleted
+ * with its consumer, because `lib/content/invariants.ts` reads it as the
+ * reference set the showcase is checked against
+ * (`checkShowcaseIsSubsetOfCuratedSet`) and as the link-honesty sweep over
+ * every curated project (`checkPortfolioLinksOnlyToPublishedCaseStudies`),
+ * both of which must keep seeing the projects the showcase filters out.
+ * `components/portfolio/project-card.tsx` — the card component this shape was
+ * designed for — is likewise unused on the landing today and left in place
+ * for the `/[locale]/proyectos` index the marquee's "see everything" path
+ * will eventually need.
  */
 export function toPortfolioCards(locale: Locale): readonly PortfolioCard[] {
   return featuredProjects()

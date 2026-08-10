@@ -113,6 +113,8 @@ export const es: Dictionary = {
     gatedNote: "Acceso restringido: este producto requiere inicio de sesión.",
     notDeployedNote:
       "Este proyecto no cuenta con un despliegue público disponible.",
+    gatedBadge: "Acceso restringido",
+    notDeployedBadge: "Sin despliegue público",
   },
   authority: {
     heading: "Un producto propio, bajo la misma marca",

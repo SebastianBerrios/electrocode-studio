@@ -14,18 +14,20 @@
  *
  * This is a data-integrity gate, not a rendering or visual gate. It answers
  * "is the content model internally consistent?", never "does the page look
- * right?". It cannot and does not catch: broken layouts, the parallax at
- * any given entry count, the form's no-JS path, responsive breakpoints, a11y
- * issues, or whether a stub `[PENDIENTE]` string has since become real,
- * plausible-looking prose. All of those need a human, a browser, or a test
- * runner this project does not have (design.md risk 8; proposal §2.2).
+ * right?". It cannot and does not catch: broken layouts, the showcase marquee
+ * at any given tile count (whether each track still outruns the viewport is
+ * arithmetic done in `components/ui/project-marquee.tsx`'s doc comment, by a
+ * human), the form's no-JS path, responsive breakpoints, a11y issues, or
+ * whether a stub `[PENDIENTE]` string has since become real, plausible-looking
+ * prose. All of those need a human, a browser, or a test runner this project
+ * does not have (design.md risk 8; proposal §2.2).
  *
  * The checks below:
  *
  * 1. **Unique slugs** — no two `PROJECTS` entries share a `slug`
  *    (specs/content-model/spec.md, "Slug Uniqueness").
  * 2. **No internal link resolves to `/` or `/{locale}`** — checked against
- *    every locale's `toHeroProducts()` output (project-portfolio spec, "No
+ *    every locale's `toShowcaseTiles()` output (project-portfolio spec, "No
  *    Self-Referential Links").
  * 3. **Every non-retainer service line has at least one project** — checked
  *    against the full `PROJECTS` list, not only the publishable subset, per
@@ -40,8 +42,8 @@
  * 5. **Non-empty `approach` per project** — same "empty string", not
  *    "still a stub", distinction as above; resolved via the async loader,
  *    so this check is itself `async`.
- * 6. **Hero projection has at least `HERO_FLOOR` entries** — per every
- *    locale's `toHeroProducts()` (design.md D4/§13 risk 1 introduced a floor
+ * 6. **Showcase projection has at least `SHOWCASE_FLOOR` entries** — per every
+ *    locale's `toShowcaseTiles()` (design.md D4/§13 risk 1 introduced a floor
  *    of 4; the `fix/content-honesty` slice temporarily lowered it to 3, and
  *    `fix/restore-consented-content` raised it back to 4 once `blu` and
  *    `atemporal` were both honestly restored — see the constant's own
@@ -57,11 +59,12 @@
  *    so a `pending` price reaching a production build is now a real defect,
  *    not an expected intermediate state. Verified by fault injection — see
  *    apply-progress.md.
- * 9. **Portfolio grid links only to published case studies** — per every
- *    locale's `toPortfolioCards()` (task 3.4/3.10). A card whose evidence is
- *    not `live` must not link to `/[locale]/proyectos/{slug}` unless
- *    `caseStudyPublished` is `true` for that project — the route does not
- *    exist until PR 5.
+ * 9. **Every curated project links only to published case studies** — per
+ *    every locale's `toPortfolioCards()` (task 3.4/3.10). A project whose
+ *    evidence is not `live` must not link to `/[locale]/proyectos/{slug}`
+ *    unless `caseStudyPublished` is `true` for it. Deliberately swept over the
+ *    FULL curated set rather than only what the showcase renders, so a link
+ *    defect cannot hide in a project the marquee currently filters out.
  * 10. **Academy stays `no-link` while unverified as reachable** (task 3.5,
  *     PR 3b) — `ACADEMY_VERIFIED_UNREACHABLE` records this batch's verified
  *     fact (private repo, deployment 404s). Flipping `ACADEMY.state` to
@@ -88,7 +91,7 @@ import { PROJECTS } from "./projects";
 import {
   featuredProjects,
   publishedCaseStudyProjects,
-  toHeroProducts,
+  toShowcaseTiles,
   toPortfolioCards,
 } from "./projections";
 import { PRICES, type PriceEntry, type PriceToken } from "./pricing";
@@ -108,7 +111,18 @@ import type { Localized } from "./types";
 const PRICE_INTEGRITY_CHECK_ACTIVE = true;
 
 /**
- * Minimum hero entry count. Originally 4 by design. The
+ * Minimum showcase tile count.
+ *
+ * **The marquee gives this number a second, harder job than the hero did.**
+ * For the hero it was an editorial floor — fewer than four screenshots and
+ * the section looked thin. The marquee additionally needs enough tiles for
+ * each track to outrun the widest viewport; below four the loop starts
+ * showing a blank strip at the trailing edge before it restarts. See
+ * `components/ui/project-marquee.tsx` for that arithmetic, and re-do it if
+ * this floor is ever lowered — this constant does not encode the tile width,
+ * so it cannot enforce the pixel side of the requirement on its own.
+ *
+ * Originally 4 by design. The
  * `fix/content-honesty` remediation slice temporarily lowered it to 3
  * because it had to honestly demote `blu` to `no-visual` (unconsented
  * capture, finding C1) and `atemporal` to `not-deployed` (domain did not
@@ -123,12 +137,12 @@ const PRICE_INTEGRITY_CHECK_ACTIVE = true;
  * `https://atemporalarq.vercel.app/` (task 1.H2, now `evidence.state:
  * "live"`) — the old `atemporalarq.com` domain still does not resolve, it
  * simply moved. With Luang, Atemporal, Blu Café, and `blu` all honest again,
- * the hero naturally has 4 entries, so 4 is once again both the design
+ * the projection naturally has 4 entries, so 4 is once again both the design
  * target and the enforced floor — not a new, stricter requirement, just the
  * original one restored now that the content backing it is honest. See
  * `sdd/dev-services-website/verify-report.md` §7.
  */
-const HERO_FLOOR = 4;
+const SHOWCASE_FLOOR = 4;
 
 /** The one service line that legitimately has no project proof. */
 const LINE_EXEMPT_FROM_PROOF: ServiceLine = "D";
@@ -137,7 +151,7 @@ const LINE_EXEMPT_FROM_PROOF: ServiceLine = "D";
  * The curated (`featured`) project set's floor and ceiling —
  * `specs/project-portfolio/spec.md`'s "Curated Set Size", amended 2026-07-31
  * (remediation of `verify-report-final.md` finding C7) from a 6–8 floor to
- * 4–8, matching `HERO_FLOOR` below. See that requirement's dated amendment
+ * 4–8, matching `SHOWCASE_FLOOR` below. See that requirement's dated amendment
  * for why the floor moved rather than a sixth project being invented to meet
  * the old number.
  */
@@ -175,10 +189,14 @@ function checkUniqueSlugs(violations: string[]): void {
 
 function checkNoSelfReferentialLinks(violations: string[]): void {
   for (const locale of LOCALES) {
-    for (const product of toHeroProducts(locale)) {
-      if (product.link === "/" || product.link === `/${locale}`) {
+    for (const tile of toShowcaseTiles(locale)) {
+      // `undefined` is "this tile renders as a non-link", which is the
+      // designed honest state for a project with no live site and no
+      // published case study — never a violation.
+      if (tile.link === undefined) continue;
+      if (tile.link === "/" || tile.link === `/${locale}`) {
         violations.push(
-          `Project "${product.title}" resolves to a self-referential link ("${product.link}") for locale "${locale}".`,
+          `Project "${tile.title}" resolves to a self-referential link ("${tile.link}") for locale "${locale}".`,
         );
       }
     }
@@ -186,14 +204,14 @@ function checkNoSelfReferentialLinks(violations: string[]): void {
 }
 
 /**
- * Every internal hero link must resolve to something that actually exists.
+ * Every internal showcase link must resolve to something that actually exists.
  *
- * This is the real compensating control for the `product.link as Route` cast
- * in `components/ui/hero-parallax.tsx`. The preserved `{ title, link,
- * thumbnail }` prop contract types `link` as `string` because it holds either
- * an external URL or an internal route, and no single `Route` type covers
- * both — so `typedRoutes` cannot check it structurally. That check has to
- * happen here instead.
+ * This is the real compensating control for the `tile.link as Route` cast in
+ * `components/ui/project-marquee.tsx` (previously `hero-parallax.tsx`, same
+ * cast, same reason). `link` is typed `string` because it holds either an
+ * external URL or an internal route, and no single `Route` type covers both —
+ * so `typedRoutes` cannot check it structurally. That check has to happen
+ * here instead.
  *
  * `checkNoSelfReferentialLinks` does NOT cover this. It only catches a link
  * equal to `/` or `/{locale}`. Route existence is a different property.
@@ -206,13 +224,18 @@ function checkNoSelfReferentialLinks(violations: string[]): void {
  * go stale the way a hand-maintained one could (the exact failure mode this
  * comment used to warn about); `/{locale}/gracias` added in THIS commit (PR
  * 6b, hard constraint 2), now that `app/[locale]/gracias/page.tsx` exists.
- * This function only walks `toHeroProducts()`, which today links internally
- * only to `/proyectos/blu` (`blu`'s evidence is `gated`, not `live`, and its
- * case study is published) — no hero product links to `/gracias`, so this
- * addition is defensive coverage for a future entry, not the first real
- * exercise of the branch. A link added before its target fails the build —
- * which is the point, since that exact mistake has already been caught four
- * times in this change set.
+ * This function only walks `toShowcaseTiles()`, which today links internally
+ * to `/proyectos/luang` and `/proyectos/blu` (the two published case studies)
+ * — no tile links to `/gracias`, so that entry is defensive coverage for a
+ * future one, not the first real exercise of the branch. A link added before
+ * its target fails the build — which is the point, since that exact mistake
+ * has already been caught four times in this change set.
+ *
+ * `/{locale}#proyectos` stays in the live-target set even though no tile can
+ * produce it any more: `publicLink()`'s anchor fallback was deleted with the
+ * hero (`lib/content/projections.ts`), so the showcase now emits `undefined`
+ * where it used to emit that anchor. The entry is harmless and the anchor is
+ * still a real target rendered by `components/sections/portfolio.tsx`.
  */
 function checkInternalLinksResolve(violations: string[]): void {
   for (const locale of LOCALES) {
@@ -225,7 +248,10 @@ function checkInternalLinksResolve(violations: string[]): void {
         caseStudyPath(locale, project.slug),
       ),
     ]);
-    for (const product of toHeroProducts(locale)) {
+    for (const tile of toShowcaseTiles(locale)) {
+      // A non-link tile has nothing to resolve. See
+      // `checkNoSelfReferentialLinks` above.
+      if (tile.link === undefined) continue;
       // External hrefs are deliberately NOT reachability-checked here. This
       // is the exact gap finding C2 (`sdd/dev-services-website/verify-report.md`)
       // exploited: `atemporalarq.com` was `evidence.state: "live"` with a
@@ -243,10 +269,10 @@ function checkInternalLinksResolve(violations: string[]): void {
       // verification (see task 1.H2 and this same finding), not a
       // build-time gate; do not add automated coverage for it here without
       // first solving that non-determinism.
-      if (isExternalHref(product.link)) continue;
-      if (!liveTargets.has(product.link)) {
+      if (isExternalHref(tile.link)) continue;
+      if (!liveTargets.has(tile.link)) {
         violations.push(
-          `Project "${product.title}" links to "${product.link}", which is not a live target for locale "${locale}". ` +
+          `Project "${tile.title}" links to "${tile.link}", which is not a live target for locale "${locale}". ` +
             `Either the route/anchor has not shipped yet, or LIVE_TARGETS in checkInternalLinksResolve needs updating.`,
         );
       }
@@ -255,13 +281,22 @@ function checkInternalLinksResolve(violations: string[]): void {
 }
 
 /**
- * No two hero cards may share a label.
+ * No two showcase tiles may share a label.
  *
- * `HeroParallax` keys its cards by `product.title`, so a collision is not
- * merely a cosmetic ambiguity — it produces duplicate React keys on
- * motion-animated siblings, which can reconcile the wrong element mid-
- * animation. It is also an a11y defect, because the cards' `alt` text is the
- * same label.
+ * Two distinct reasons, and the second is why this check survived the move off
+ * `HeroParallax`:
+ *
+ * 1. The tile label is the visitor's only way to tell two tiles apart, and it
+ *    is also what the announced copy's `alt` text describes. Two identical
+ *    labels are an ambiguity for sighted visitors and an a11y defect for
+ *    everyone else.
+ * 2. `checkShowcaseIsSubsetOfCuratedSet` joins the showcase and the curated
+ *    set BY TITLE. A collision would silently make that join lie, so this
+ *    check is a precondition of that one, not merely a cosmetic rule.
+ *
+ * (`components/ui/project-marquee.tsx` keys its tiles by `slug`, not title, so
+ * the React-key collision the original version of this check also guarded
+ * against can no longer occur. The two reasons above stand on their own.)
  *
  * This fired for real: `blucafe` (the client's public site) and `blu` (that
  * same client's internal system) both carry `client: "Blu Café"`, and
@@ -269,18 +304,19 @@ function checkInternalLinksResolve(violations: string[]): void {
  * as "Blu Café". Caught by reading compiled HTML, not by any gate — hence this
  * check.
  */
-function checkUniqueHeroTitles(violations: string[]): void {
+function checkUniqueShowcaseTitles(violations: string[]): void {
   for (const locale of LOCALES) {
     const seen = new Set<string>();
-    for (const product of toHeroProducts(locale)) {
-      if (seen.has(product.title)) {
+    for (const tile of toShowcaseTiles(locale)) {
+      if (seen.has(tile.title)) {
         violations.push(
-          `Two hero cards share the label "${product.title}" for locale "${locale}". ` +
-            `HeroParallax keys cards by title, so this also collides React keys. ` +
-            `Give each project a distinct "title" that identifies the work, not just the client.`,
+          `Two showcase tiles share the label "${tile.title}" for locale "${locale}". ` +
+            `checkShowcaseIsSubsetOfCuratedSet joins the two projections by title, so this also ` +
+            `makes that check unreliable. Give each project a distinct "title" that identifies ` +
+            `the work, not just the client.`,
         );
       }
-      seen.add(product.title);
+      seen.add(tile.title);
     }
   }
 }
@@ -309,48 +345,56 @@ function checkGrantedTitlesDoNotLeakClient(violations: string[]): void {
 }
 
 /**
- * The hero must be a SUBSET of the portfolio grid, and the only honest reason
- * for a project to be grid-only is that it has no image.
+ * The showcase must be a SUBSET of the curated set, and the only honest reason
+ * for a curated project to be missing from it is that it has no image.
  *
- * `specs/project-portfolio/spec.md` originally required the two surfaces to
- * render an identical set. That is not achievable: the hero is an image-driven
- * parallax, so a `no-visual` project cannot appear there without a broken or
- * fake image frame. `sdd-verify` finding W10 flagged that the spec, the design,
- * and the implementation all disagreed, and that the mismatch would surface as
- * a false CRITICAL once PR 3a ships the grid. The spec was amended to the
- * subset rule; this check enforces it.
+ * **This check matters MORE than it did, not less.** It used to compare two
+ * rendered surfaces — the hero and the portfolio grid — where a divergence
+ * meant the page contradicted itself and a reader could see it. The grid is
+ * gone: the marquee is now the only place client work appears on the landing,
+ * so a project silently dropped from it is a project that has vanished from
+ * the site with nothing left to contradict. The one permitted reason
+ * (`no-visual` — there is no honest screenshot to show, see
+ * `specs/project-portfolio/spec.md`, "`no-visual` degrades honestly") stays
+ * permitted; every other cause fails the build.
+ *
+ * `toPortfolioCards()` is the reference set rather than `featuredProjects()`
+ * directly, because it is the projection that carries the resolved
+ * `evidence.state` this check reasons about.
  *
  * Joining the two projections by `title` is sound because `publicTitle()` is
- * deterministic per project and `checkUniqueHeroTitles` guarantees hero labels
- * do not collide.
+ * deterministic per project and `checkUniqueShowcaseTitles` guarantees the
+ * labels do not collide.
  */
-function checkHeroIsSubsetOfGrid(violations: string[]): void {
+function checkShowcaseIsSubsetOfCuratedSet(violations: string[]): void {
   for (const locale of LOCALES) {
-    const grid = toPortfolioCards(locale);
-    const heroTitles = new Set(toHeroProducts(locale).map((p) => p.title));
-    const gridTitles = new Set(grid.map((c) => c.title));
+    const curated = toPortfolioCards(locale);
+    const showcaseTitles = new Set(toShowcaseTiles(locale).map((t) => t.title));
+    const curatedTitles = new Set(curated.map((c) => c.title));
 
-    for (const title of heroTitles) {
-      if (!gridTitles.has(title)) {
+    for (const title of showcaseTitles) {
+      if (!curatedTitles.has(title)) {
         violations.push(
-          `Hero shows "${title}" for locale "${locale}" but the portfolio grid does not. ` +
-            `The hero must be a subset of the grid — the two surfaces would disagree about what the studio has done.`,
+          `The showcase marquee shows "${title}" for locale "${locale}" but it is not in the curated set. ` +
+            `Everything the landing shows must come from featuredProjects().`,
         );
       }
     }
 
-    for (const card of grid) {
-      const inHero = heroTitles.has(card.title);
-      if (!inHero && card.evidence.state !== "no-visual") {
+    for (const card of curated) {
+      const inShowcase = showcaseTitles.has(card.title);
+      if (!inShowcase && card.evidence.state !== "no-visual") {
         violations.push(
-          `Project "${card.slug}" has visual evidence ("${card.evidence.state}") but is missing from the hero ` +
-            `for locale "${locale}". The only permitted reason to be grid-only is "no-visual".`,
+          `Project "${card.slug}" has visual evidence ("${card.evidence.state}") but is missing from the ` +
+            `showcase marquee for locale "${locale}". The marquee is the only surface on the landing that ` +
+            `shows client work, so this project appears nowhere. The one permitted reason to be absent is ` +
+            `"no-visual".`,
         );
       }
-      if (inHero && card.evidence.state === "no-visual") {
+      if (inShowcase && card.evidence.state === "no-visual") {
         violations.push(
-          `Project "${card.slug}" is "no-visual" yet appears in the hero for locale "${locale}", ` +
-            `which cannot render a card without a thumbnail.`,
+          `Project "${card.slug}" is "no-visual" yet appears in the showcase marquee for locale "${locale}", ` +
+            `which cannot render a tile without a screenshot.`,
         );
       }
     }
@@ -491,12 +535,14 @@ async function checkNonEmptyApproach(violations: string[]): Promise<void> {
   );
 }
 
-function checkHeroFloor(violations: string[]): void {
+function checkShowcaseFloor(violations: string[]): void {
   for (const locale of LOCALES) {
-    const count = toHeroProducts(locale).length;
-    if (count < HERO_FLOOR) {
+    const count = toShowcaseTiles(locale).length;
+    if (count < SHOWCASE_FLOOR) {
       violations.push(
-        `Hero projection for locale "${locale}" has only ${count} entries; the floor is ${HERO_FLOOR}.`,
+        `Showcase projection for locale "${locale}" has only ${count} tiles; the floor is ${SHOWCASE_FLOOR}. ` +
+          `Below it the marquee's tracks stop covering the viewport and the loop shows a gap — ` +
+          `see components/ui/project-marquee.tsx.`,
       );
     }
   }
@@ -552,7 +598,7 @@ function checkAuthorityNoLinkWhileUndeployed(violations: string[]): void {
  * (`featured`) project set must stay within `specs/project-portfolio/
  * spec.md`'s "Curated Set Size" floor/ceiling. This is locale-independent —
  * `featuredProjects()` filters on `featured`/`consent`, neither of which
- * varies per locale — so, unlike `checkHeroFloor`, this runs once, not once
+ * varies per locale — so, unlike `checkShowcaseFloor`, this runs once, not once
  * per locale.
  */
 function checkCuratedSetSize(violations: string[]): void {
@@ -632,15 +678,15 @@ export async function assertContentInvariants(): Promise<void> {
   checkUniqueSlugs(violations);
   checkNoSelfReferentialLinks(violations);
   checkInternalLinksResolve(violations);
-  checkUniqueHeroTitles(violations);
+  checkUniqueShowcaseTitles(violations);
   checkGrantedTitlesDoNotLeakClient(violations);
-  checkHeroIsSubsetOfGrid(violations);
+  checkShowcaseIsSubsetOfCuratedSet(violations);
   checkSiteUrlConfigured(violations);
   checkPortfolioLinksOnlyToPublishedCaseStudies(violations);
   checkServiceLineProof(violations);
   checkNoEmptyLocalizedValues(violations);
   await checkNonEmptyApproach(violations);
-  checkHeroFloor(violations);
+  checkShowcaseFloor(violations);
   checkEvidenceMediaShape(violations);
   checkPendingPricesInProduction(violations);
   checkAuthorityNoLinkWhileUndeployed(violations);

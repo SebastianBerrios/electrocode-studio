@@ -1,4 +1,3 @@
-import { HeroParallax } from "@/components/ui/hero-parallax";
 import { HeroHeader } from "@/components/sections/hero-header";
 import { Services } from "@/components/sections/services";
 import { Process } from "@/components/sections/process";
@@ -9,7 +8,6 @@ import { PricingSummary } from "@/components/sections/pricing-summary";
 import { FaqSection } from "@/components/sections/faq-section";
 import { Brief } from "@/components/sections/brief";
 import { assertLocale } from "@/lib/content/locales";
-import { toHeroProducts } from "@/lib/content/projections";
 import { canonicalAlternates } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -75,14 +73,19 @@ export const dynamic = "force-static";
  * invariants are untouched; the footer's "Mantenimiento" link now points at
  * that pricing block instead of the removed `#retainer` anchor.
  *
- * Replaces the former `app/page.tsx` (task 2.18). `toHeroProducts(locale)`
- * is now the single source of truth for the hero's product grid, replacing
- * the hardcoded 4-entry array that page used to define inline.
+ * Replaces the former `app/page.tsx` (task 2.18).
  *
- * `HeroParallax` no longer receives `productsId="proyectos"`: that id now
- * belongs to `components/sections/portfolio.tsx` — its real, intended
- * destination now that the Proyectos section exists — see that
- * component's doc comment.
+ * **The hero no longer shows projects.** Section 1 used to be
+ * `HeroParallax` — a scroll-linked track of client screenshots — wrapping
+ * `HeroHeader` as its `header` slot. It showed the same four projects the
+ * Proyectos section did, so the portfolio arrived before the offer and then
+ * arrived again, and the hero's own copy and CTAs had to be defended from it
+ * with an opaque panel and a z-index (see `hero-header.tsx`'s history). The
+ * projects now appear exactly once, in section 4, as two counter-scrolling
+ * marquee rows — `components/sections/portfolio.tsx` has the reasoning.
+ * `HeroHeader` was always self-sufficient (it sizes itself to the first
+ * screen), so it composes here directly and `components/ui/hero-parallax.tsx`
+ * was deleted with its last consumer.
  */
 export default async function LocalePage({
   params,
@@ -91,14 +94,10 @@ export default async function LocalePage({
 }) {
   const { locale } = await params;
   const validLocale = assertLocale(locale);
-  const products = toHeroProducts(validLocale);
 
   return (
     <main id="main-content">
-      <HeroParallax
-        products={products}
-        header={<HeroHeader locale={validLocale} />}
-      />
+      <HeroHeader locale={validLocale} />
       <Services locale={validLocale} />
       <Process locale={validLocale} />
       {/*
