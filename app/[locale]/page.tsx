@@ -3,6 +3,7 @@ import { Services } from "@/components/sections/services";
 import { Process } from "@/components/sections/process";
 import { WayOfWorking } from "@/components/sections/way-of-working";
 import { Portfolio } from "@/components/sections/portfolio";
+import { Templates } from "@/components/sections/templates";
 import { Authority } from "@/components/sections/authority";
 import { PricingSummary } from "@/components/sections/pricing-summary";
 import { FaqSection } from "@/components/sections/faq-section";
@@ -111,6 +112,15 @@ export default async function LocalePage({
       */}
       <WayOfWorking locale={validLocale} />
       <Portfolio locale={validLocale} />
+      {/*
+        Section 4b, "Plantillas listas" — a third insertion BETWEEN the eight
+        fixed sections, same category as 3b and 7b above, never a reordering of
+        them. It follows `#proyectos` deliberately: the visitor has just seen
+        bespoke client work, and this answers the thought that comes next —
+        "that looks like more than I need". See
+        `components/sections/templates.tsx`.
+      */}
+      <Templates locale={validLocale} />
       <Authority locale={validLocale} />
       <PricingSummary locale={validLocale} />
       <FaqSection locale={validLocale} />

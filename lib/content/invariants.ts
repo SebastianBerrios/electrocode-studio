@@ -82,6 +82,21 @@
  *     from 6 to 5 by removing a real duplicate, and nothing caught that this
  *     requirement had no build-time gate at all — a reviewer had to notice
  *     it by reading the spec by hand. This closes that gap.
+ * 13. **No template excluded for consent reasons is in the catalogue** —
+ *     `TEMPLATE_SLUGS_EXCLUDED_FOR_CONSENT`. The one entry today is
+ *     `piero-cielo`, a real couple's private invitation whose `PROJECTS` record
+ *     is `consent: "withheld"`. See that constant's own comment for why this is
+ *     a denylist rather than a join against `PROJECTS`.
+ * 14. **Unique template slugs** — the slug is the React key and the gallery id.
+ * 15. **No blank `Localized<string>` anywhere in the catalogue** — including
+ *     every preview's `alt`, which on a card that IS a screenshot is the only
+ *     description a screen-reader user receives.
+ * 16. **No empty template family** — a family with no designs would render an
+ *     empty gallery under a heading promising models.
+ * 17. **Every `set` template demo is an absolute URL** — these templates deploy
+ *     as standalone sites, so an internal-looking path would be a dead link on
+ *     a surface `checkInternalLinksResolve` does not walk. Cannot fire today
+ *     (every demo is `pending`), which is when it is cheap to add.
  */
 
 import "server-only";
@@ -101,6 +116,11 @@ import { caseStudyPath, isExternalHref } from "@/lib/links";
 import type { ProjectSlug } from "./projects";
 import { ACADEMY } from "./authority";
 import { RETAINER_COMMITMENTS } from "./retainer";
+import {
+  TEMPLATES,
+  TEMPLATE_FAMILIES,
+  templatesByFamily,
+} from "./templates";
 import type { Localized } from "./types";
 
 /**
@@ -617,6 +637,146 @@ function isBlankLocalized(value: Localized<string>): boolean {
 }
 
 /**
+ * Template folders that exist in the source repositories but must NEVER appear
+ * in the public catalogue.
+ *
+ * `piero-cielo` is a real couple's private wedding invitation. `PROJECTS`
+ * records the same work as `wedding-invitation-piero` with
+ * `consent: { status: "withheld" }` and `evidence: { state: "no-visual",
+ * media: [] }` — "No recorded consent exists to publish anything identifying".
+ * Its screenshot in a gallery would be finding C1 (an unconsented capture) all
+ * over again, which is the one content defect this repository has already had
+ * to remediate.
+ *
+ * **This is a denylist by template slug, not a join on `PROJECTS`, and that is
+ * deliberate.** The two identifiers do not match — the template folder is
+ * `piero-cielo` and the project slug is `wedding-invitation-piero` — so a
+ * string join would silently pass while proving nothing. Naming the excluded
+ * folder outright is the check that actually fires. Add to this list, never
+ * remove from it, unless written consent for that specific work is on record.
+ */
+const TEMPLATE_SLUGS_EXCLUDED_FOR_CONSENT: readonly string[] = ["piero-cielo"];
+
+/**
+ * The consent gate on the template catalogue — the guard
+ * `lib/content/templates.ts`'s doc comment points at.
+ *
+ * Cheap, and it guards the most likely way the mistake recurs: someone adds
+ * "the seventh invitation" because the repository has seven folders and the
+ * catalogue shows six.
+ */
+function checkTemplatesExcludeWithheldWork(violations: string[]): void {
+  for (const template of TEMPLATES) {
+    if (TEMPLATE_SLUGS_EXCLUDED_FOR_CONSENT.includes(template.slug)) {
+      violations.push(
+        `Template "${template.slug}" is in the public catalogue but is excluded for consent reasons ` +
+          `(see TEMPLATE_SLUGS_EXCLUDED_FOR_CONSENT in lib/content/invariants.ts). It is real client work ` +
+          `recorded in lib/content/projects/index.ts with consent "withheld" — it must not be published as ` +
+          `a template.`,
+      );
+    }
+  }
+}
+
+/** No two designs may share a slug — it is the React key and the gallery id. */
+function checkUniqueTemplateSlugs(violations: string[]): void {
+  const seen = new Set<string>();
+  for (const template of TEMPLATES) {
+    if (seen.has(template.slug)) {
+      violations.push(`Duplicate template slug: "${template.slug}".`);
+    }
+    seen.add(template.slug);
+  }
+}
+
+/**
+ * Every locale-keyed string the catalogue renders must be non-blank.
+ *
+ * Same "empty string, not still-a-stub" distinction as
+ * `checkNoEmptyLocalizedValues` above: this catches a field that was added and
+ * never filled, which on this surface would render as a nameless card or a
+ * feature bullet that is just whitespace.
+ */
+function checkNoEmptyTemplateCopy(violations: string[]): void {
+  for (const template of TEMPLATES) {
+    if (isBlankLocalized(template.direction)) {
+      violations.push(`Template "${template.slug}" has a blank "direction".`);
+    }
+    if (isBlankLocalized(template.bestFor)) {
+      violations.push(`Template "${template.slug}" has a blank "bestFor".`);
+    }
+    if (isBlankLocalized(template.preview.alt)) {
+      violations.push(
+        `Template "${template.slug}" has blank alt text on its preview. The screenshot is the whole ` +
+          `card, so this is the only description a screen-reader user gets.`,
+      );
+    }
+  }
+
+  for (const family of Object.values(TEMPLATE_FAMILIES)) {
+    if (isBlankLocalized(family.name)) {
+      violations.push(`Template family "${family.id}" has a blank "name".`);
+    }
+    if (isBlankLocalized(family.tagline)) {
+      violations.push(`Template family "${family.id}" has a blank "tagline".`);
+    }
+    if (family.features.some(isBlankLocalized)) {
+      violations.push(`Template family "${family.id}" has a blank entry in "features".`);
+    }
+    if (family.steps.some(isBlankLocalized)) {
+      violations.push(`Template family "${family.id}" has a blank entry in "steps".`);
+    }
+  }
+}
+
+/**
+ * Every family must actually have designs to show.
+ *
+ * A family with zero templates builds a route whose gallery is an empty grid
+ * under a heading promising models — and its landing card would read "0
+ * diseños". The floor is 1 rather than a larger editorial number on purpose:
+ * this is a structural gate, and the honest count is whatever the catalogue
+ * holds (six invitations, not seven — see
+ * `checkTemplatesExcludeWithheldWork`).
+ */
+function checkTemplateFamiliesAreNotEmpty(violations: string[]): void {
+  for (const family of Object.values(TEMPLATE_FAMILIES)) {
+    if (templatesByFamily(family.id).length === 0) {
+      violations.push(
+        `Template family "${family.id}" has no designs, so its gallery would render empty.`,
+      );
+    }
+  }
+}
+
+/**
+ * A published demo must be an external URL.
+ *
+ * `Template.demo` is `pending` for every entry today, so this cannot fire yet —
+ * which is exactly when it is cheap to add. The failure it guards is specific:
+ * these templates deploy as their own standalone sites, so the only correct
+ * value is an absolute URL. An internal-looking path here would render an
+ * `<a href="/algo">` on this site pointing at a route that does not exist, the
+ * dead-link class `checkInternalLinksResolve` covers for the showcase and
+ * nothing covered for this surface.
+ */
+function checkTemplateDemosAreExternal(violations: string[]): void {
+  for (const template of TEMPLATES) {
+    if (template.demo.status !== "set") continue;
+    if (isBlank(template.demo.value)) {
+      violations.push(`Template "${template.slug}" has a "set" demo with a blank URL.`);
+      continue;
+    }
+    if (!isExternalHref(template.demo.value)) {
+      violations.push(
+        `Template "${template.slug}" has demo "${template.demo.value}", which is not an absolute URL. ` +
+          `Templates deploy as their own standalone sites, so a demo must be an external link.`,
+      );
+    }
+  }
+}
+
+/**
  * Task 3.6's compensating control: a retainer commitment marked `"set"` in
  * `lib/content/retainer.ts` must actually carry non-blank content for every
  * locale. A `"pending"` commitment is exempt — that is the designed
@@ -692,6 +852,11 @@ export async function assertContentInvariants(): Promise<void> {
   checkAuthorityNoLinkWhileUndeployed(violations);
   checkRetainerCommitmentsNotBlank(violations);
   checkCuratedSetSize(violations);
+  checkTemplatesExcludeWithheldWork(violations);
+  checkUniqueTemplateSlugs(violations);
+  checkNoEmptyTemplateCopy(violations);
+  checkTemplateFamiliesAreNotEmpty(violations);
+  checkTemplateDemosAreExternal(violations);
 
   if (violations.length === 0) return;
 

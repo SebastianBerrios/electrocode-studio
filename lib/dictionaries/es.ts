@@ -32,6 +32,7 @@ export const es: Dictionary = {
     whatsappLink: "WhatsApp",
     logoAlt: "ElectroCode",
     servicesHeading: "Servicios",
+    templatesHeading: "Plantillas",
     studioHeading: "El estudio",
     contactHeading: "Contacto",
     processLink: "Proceso",
@@ -115,6 +116,36 @@ export const es: Dictionary = {
       "Este proyecto no cuenta con un despliegue público disponible.",
     gatedBadge: "Acceso restringido",
     notDeployedBadge: "Sin despliegue público",
+  },
+  // Structural labels only. Every family's name, tagline, feature list, steps
+  // and price come from `lib/content/templates.ts` and `lib/content/pricing.ts`
+  // — see `TemplatesDictionary`'s doc comment for the dividing line, and for
+  // why `demoPendingNote` states the absence without promising a date.
+  templates: {
+    eyebrow: "Diseños ya terminados",
+    // "elegir" is what the section turns on — these are not commissioned from
+    // scratch, the work is choosing one — so it is the word that carries the
+    // colour. Same split as `hero.heading` and `wayOfWorking.heading`.
+    heading: { lead: "Listo para", accent: "elegir" },
+    intro:
+      "Dos productos con el diseño ya resuelto: eliges el modelo, nos pasas tu contenido y lo publicamos. Cuestan menos que un proyecto a medida porque el diseño ya está hecho.",
+    designsCountSuffix: "diseños",
+    viewFamilyCta: "Ver los diseños",
+    fromPrefix: "Desde",
+    galleryHeading: "Modelos",
+    featuresHeading: "Qué incluye",
+    stepsHeading: "Cómo la obtienes",
+    bestForLabel: "Ideal para",
+    // No lo renderiza nadie todavía: ninguna plantilla tiene demo publicada.
+    // Ver el comentario de `demoCta` en `types.ts`.
+    demoCta: "Ver ejemplo",
+    demoPendingNote:
+      "Todavía no hay demos en línea. Cada imagen es una captura de la plantilla real, tal como se ve.",
+    viewPricingLink: "Ver precio y condiciones",
+    ctaHeading: "¿Te gustó alguno?",
+    ctaBody:
+      "Escríbenos por WhatsApp diciéndonos qué modelo te interesa y te respondemos con los siguientes pasos.",
+    ctaButtonLabel: "Escribir por WhatsApp",
   },
   authority: {
     heading: "Un producto propio, bajo la misma marca",

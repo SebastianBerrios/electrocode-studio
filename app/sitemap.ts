@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
 import { LOCALES } from "@/lib/content/locales";
 import { publishedCaseStudyProjects } from "@/lib/content/projections";
-import { caseStudyPath } from "@/lib/links";
+import { caseStudyPath, templatesPath } from "@/lib/links";
+import {
+  TEMPLATE_FAMILIES,
+  type TemplateFamilyId,
+} from "@/lib/content/templates";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -29,6 +33,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return LOCALES.flatMap((locale) => [
     { url: `${SITE_URL}/${locale}`, lastModified: new Date() },
     { url: `${SITE_URL}/${locale}/precios`, lastModified: new Date() },
+    // Both catalogue routes, derived from `TEMPLATE_FAMILIES` rather than
+    // hardcoded: `generateStaticParams` in
+    // `app/[locale]/plantillas/[family]/page.tsx` enumerates the same object,
+    // so the sitemap cannot list a family whose page is not built — the exact
+    // dead-URL failure the case-study entries above are narrowed to avoid.
+    ...Object.keys(TEMPLATE_FAMILIES).map((family) => ({
+      url: `${SITE_URL}${templatesPath(locale, family as TemplateFamilyId)}`,
+      lastModified: new Date(),
+    })),
     ...publishedCaseStudyProjects().map((project) => ({
       url: `${SITE_URL}${caseStudyPath(locale, project.slug)}`,
       lastModified: new Date(),

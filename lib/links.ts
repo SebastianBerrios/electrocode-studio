@@ -7,6 +7,7 @@
 
 import type { Locale } from "@/lib/content/locales";
 import type { ServiceLine } from "@/lib/content/service-lines";
+import type { TemplateFamilyId } from "@/lib/content/templates";
 
 /**
  * Returns `true` when `href` points at an external destination — a URL with
@@ -67,6 +68,24 @@ const PRICING_LINE_ANCHOR_IDS = {
  */
 export function pricingLineAnchor(locale: Locale, line: ServiceLine) {
   return `${pricingPath(locale)}#${PRICING_LINE_ANCHOR_IDS[line]}` as const;
+}
+
+/**
+ * The internal route for one template family's catalogue page.
+ *
+ * Same typing discipline as `pricingPath()` above — a template literal type
+ * rather than a widened `string`, so every `<Link href={templatesPath(...)}>`
+ * type-checks against the generated `Route` union with no `as Route` cast.
+ *
+ * The family id IS the URL segment (`lib/content/templates.ts`), so the route
+ * and the catalogue cannot drift apart: adding a third family gives it a route
+ * for free, and renaming one is a compile error at every call site.
+ */
+export function templatesPath(
+  locale: Locale,
+  family: TemplateFamilyId,
+): `/${Locale}/plantillas/${TemplateFamilyId}` {
+  return `/${locale}/plantillas/${family}`;
 }
 
 /**

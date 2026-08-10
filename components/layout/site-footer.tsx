@@ -5,7 +5,13 @@ import logoMark from "@/public/logo-mark.png";
 import { WHATSAPP } from "@/lib/content/contact";
 import { SERVICE_LINES, type ServiceLine } from "@/lib/content/service-lines";
 import { getDictionary } from "@/lib/dictionaries";
-import { landingAnchor, pricingLineAnchor, pricingPath } from "@/lib/links";
+import { TEMPLATE_FAMILIES } from "@/lib/content/templates";
+import {
+  landingAnchor,
+  pricingLineAnchor,
+  pricingPath,
+  templatesPath,
+} from "@/lib/links";
 import type { Locale } from "@/lib/content/locales";
 
 // Server Component. Only `es` ships today, so no locale-switcher is
@@ -49,7 +55,10 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="mt-24 px-3 pb-3 md:px-4 md:pb-4">
       <div className="mx-auto max-w-7xl rounded-3xl bg-nav px-6 py-12 text-nav-foreground md:px-12 md:py-16">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        {/* Five tracks, not four: the Plantillas column below is a real
+            addition to the sitemap, so the brand cell no longer needs the
+            `lg:pr-8` breathing room it had when it shared a row with three. */}
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:pr-8">
             <Link
               href={`/${locale}`}
@@ -82,6 +91,30 @@ export function SiteFooter({ locale }: { locale: Locale }) {
                 <li key={id}>
                   <Link href={pricingLineAnchor(locale, id)} className={linkClass}>
                     {SERVICE_LINES[id].name[locale]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Fourth nav column. Labels come from `TEMPLATE_FAMILIES`, not the
+              dictionary — the family names are domain facts with one home, the
+              same rule the Servicios column above follows for
+              `SERVICE_LINES`. See `SiteFooterDictionary.templatesHeading` for
+              why these are a separate column rather than two more entries in
+              Servicios. */}
+          <nav aria-labelledby="footer-plantillas">
+            <h2 id="footer-plantillas" className={headingClass}>
+              {footer.templatesHeading}
+            </h2>
+            <ul className="mt-4 space-y-3 text-sm">
+              {Object.values(TEMPLATE_FAMILIES).map((family) => (
+                <li key={family.id}>
+                  <Link
+                    href={templatesPath(locale, family.id)}
+                    className={linkClass}
+                  >
+                    {family.name[locale]}
                   </Link>
                 </li>
               ))}

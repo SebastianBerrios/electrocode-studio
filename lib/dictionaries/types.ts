@@ -110,6 +110,22 @@ export type SiteFooterDictionary = {
   readonly whatsappLink: string;
   readonly logoAlt: string;
   readonly servicesHeading: string;
+  /**
+   * Heading for the footer's fourth nav column, the two ready-made
+   * catalogues.
+   *
+   * **This is not the "Recursos" column this footer refused to build.** That
+   * one was rejected for having nothing real to put in it; this one lists two
+   * routes that exist and are built. The entries' labels come from
+   * `TEMPLATE_FAMILIES` (`lib/content/templates.ts`), never restated here, for
+   * the same reason the Servicios column reads `SERVICE_LINES` directly.
+   *
+   * They are deliberately NOT folded into the Servicios column: line C is
+   * named "Biolinks y microsites de evento", so a "Biolinks" entry beside it
+   * would put the same word twice in one list pointing at two different
+   * destinations.
+   */
+  readonly templatesHeading: string;
   readonly studioHeading: string;
   readonly contactHeading: string;
   readonly processLink: string;
@@ -435,6 +451,70 @@ export type BriefDictionary = {
 };
 
 /**
+ * Landing section 4b, "Plantillas listas", and the two catalogue routes under
+ * `/[locale]/plantillas/**` that section links to.
+ *
+ * **One dictionary for both surfaces on purpose.** The teaser and the family
+ * pages describe the same two products, so a second set of keys is how the
+ * landing ends up calling something "Biolinks" that the page it links to calls
+ * something else. Everything specific to a family — its name, tagline, feature
+ * list, steps, price token, and the designs themselves — is a domain fact and
+ * lives in `lib/content/templates.ts`; these keys are only the structural
+ * headings and labels wrapped around that data, the same dividing line every
+ * other section already uses.
+ *
+ * **`demoPendingNote` must not become a promise.** No template is deployed, so
+ * a gallery tile shows its screenshot and no "ver ejemplo" link. This string
+ * states that plainly and deliberately names no date — the studio has not
+ * committed to one, and inventing "próximamente" here would be the same class
+ * of fabrication `PriceEntry`'s `pending` state and `turnaroundPendingNote`
+ * already exist to prevent. Delete this key the day every `demo` in
+ * `lib/content/templates.ts` is `set`; do not soften it before then.
+ */
+export type TemplatesDictionary = {
+  readonly eyebrow: string;
+  /**
+   * Split at its accented word, exactly the shape and for exactly the reason
+   * documented on `HeroDictionary.heading`.
+   */
+  readonly heading: {
+    readonly lead: string;
+    readonly accent: string;
+  };
+  readonly intro: string;
+  /** Suffix after a family's design count, which the component renders from
+   *  `templateCount()` — never written here. Same prefix/suffix pattern as
+   *  `process.revisionsLabel` and the announcement bar. */
+  readonly designsCountSuffix: string;
+  readonly viewFamilyCta: string;
+  /** Prefix for a family's figure, which is a fixed tier price, not a floor. */
+  readonly fromPrefix: string;
+  readonly galleryHeading: string;
+  readonly featuresHeading: string;
+  readonly stepsHeading: string;
+  readonly bestForLabel: string;
+  /**
+   * Label for a tile's link to its published demo. Has NO consumer today —
+   * every `demo` in `lib/content/templates.ts` is `pending`, so
+   * `components/templates/template-card.tsx` renders no anchor at all. It is
+   * declared now so that publishing a demo costs one data edit and no
+   * dictionary change, the same reason `authority.visitCta` exists while
+   * `ACADEMY.state` is still `no-link`.
+   */
+  readonly demoCta: string;
+  readonly demoPendingNote: string;
+  readonly viewPricingLink: string;
+  readonly ctaHeading: string;
+  readonly ctaBody: string;
+  /**
+   * Same words as `brief.whatsappCtaLabel`, `caseStudy.contactCtaLabel` and
+   * `gracias.whatsappCtaLabel`, because it is the same action on the same
+   * channel — a fourth name for one destination would read as a fourth offer.
+   */
+  readonly ctaButtonLabel: string;
+};
+
+/**
  * `/[locale]/gracias`, the brief form's confirmation route (task 6.8,
  * `specs/lead-capture/spec.md`, "Confirmation Route"). Reachable directly
  * without having submitted anything, so `body` must read sensibly standalone
@@ -461,6 +541,7 @@ export type Dictionary = {
   readonly wayOfWorking: WayOfWorkingDictionary;
   readonly landingFaq: LandingFaqDictionary;
   readonly portfolio: PortfolioDictionary;
+  readonly templates: TemplatesDictionary;
   readonly authority: AuthorityDictionary;
   readonly retainer: RetainerDictionary;
   readonly pricing: PricingDictionary;
