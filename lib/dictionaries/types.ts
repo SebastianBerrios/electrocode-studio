@@ -394,50 +394,44 @@ export type CaseStudyDictionary = {
 };
 
 /**
- * Landing section 8, the brief form + WhatsApp conversion section
- * (`components/sections/brief.tsx`, task 6.6; `specs/lead-capture/spec.md`).
- * Field rules and validation messages live in `lib/brief/schema.ts`
- * (`BriefErrors`, one dictionary namespace per concern); these keys are the
- * structural labels/copy around that pure validator, following the same
- * dividing line every other section already uses.
+ * Landing section 8, the closing conversion card (`components/sections/
+ * brief.tsx`, task 6.6; `specs/lead-capture/spec.md`).
  *
- * `whatsappOnlyBody` is the copy rendered when `isBriefFormConfigured()`
- * (`lib/brief/config.ts`) is `false` — the fail-closed WhatsApp-only path
- * this batch's overriding rule requires. It must read as an honest
- * invitation to use WhatsApp, never as a "form coming soon" placeholder.
+ * **Reduced from twenty-six keys to four (2026-08-09).** This section used to
+ * render the brief form, so this type carried every field label, placeholder,
+ * validation heading and failure message that form needed. The section is now
+ * one eyebrow, one heading and one WhatsApp button — see
+ * `components/sections/brief.tsx` for why — so the form's copy went with it.
+ *
+ * The form's own copy type did NOT move here and was never lost:
+ * `BriefFormCopy` is declared in `components/brief/brief-form.tsx` beside the
+ * component that consumes it, which is why that (currently unmounted) file
+ * still typechecks with nothing in this dictionary to feed it. Whatever route
+ * re-mounts the form supplies those strings.
  */
 export type BriefDictionary = {
-  readonly heading: string;
-  readonly intro: string;
-  readonly serviceLineLabel: string;
-  readonly serviceLinePlaceholder: string;
-  readonly budgetBandLabel: string;
-  readonly budgetBandPlaceholder: string;
-  readonly nameLabel: string;
-  readonly emailLabel: string;
-  readonly phoneLabel: string;
-  readonly phoneOptionalNote: string;
-  readonly projectDescriptionLabel: string;
-  readonly submitLabel: string;
-  readonly submittingLabel: string;
-  readonly errorSummaryHeading: string;
-  readonly sendFailedHeading: string;
-  readonly sendFailedBody: string;
   /**
-   * Copy for `status: "rejected"` (remediation of `verify-report-final.md`
-   * finding C2 — previously rendered nothing at all). Deliberately generic:
-   * must not reveal which abuse-layer control tripped.
+   * The small line above the heading. Names the channel this card actually
+   * opens — the button below is a WhatsApp link and nothing else — so the
+   * card never reads as an invitation to a form that is not there.
    */
-  readonly rejectedHeading: string;
-  readonly rejectedBody: string;
-  readonly whatsappFallbackLabel: string;
-  /** Shown only when JavaScript is unavailable — the form cannot be submitted then. */
-  readonly noscriptHeading: string;
-  readonly noscriptBody: string;
-  readonly whatsappAsideHeading: string;
-  readonly whatsappAsideBody: string;
+  readonly eyebrow: string;
+  /**
+   * Split at its accented word, exactly the shape and for exactly the reason
+   * documented on `HeroDictionary.heading`. The hero opens the page on that
+   * composition and this card closes it on the same one, which is what makes
+   * the two read as the same gesture rather than two unrelated headings.
+   */
+  readonly heading: {
+    readonly lead: string;
+    readonly accent: string;
+  };
+  /**
+   * The card's only button. Same words as `caseStudy.contactCtaLabel` and
+   * `gracias.whatsappCtaLabel`, because it is the same action on the same
+   * channel.
+   */
   readonly whatsappCtaLabel: string;
-  readonly whatsappOnlyBody: string;
 };
 
 /**

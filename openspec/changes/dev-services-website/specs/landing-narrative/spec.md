@@ -8,22 +8,22 @@ The landing page (`/[locale]`) as one continuous sales argument, told in a fixed
 
 ### Requirement: Fixed Section Order
 
-The landing MUST render its sections in this order: (1) Hero, (2) Servicios, (3) Proceso, (3b) Cómo trabajamos, (4) Proyectos, (5) Autoridad, (6) Precios summary, (7b) FAQ, (8) Brief form + WhatsApp, (9) Footer.
+The landing MUST render its sections in this order: (1) Hero, (2) Servicios, (3) Proceso, (3b) Cómo trabajamos, (4) Proyectos, (5) Autoridad, (6) Precios summary, (7b) FAQ, (8) Cierre/WhatsApp, (9) Footer.
 
 Sections 3b and 7b were inserted by the green restyle. They are additions between the originally-numbered sections, never reorderings of them: the remaining sequence still reads top to bottom exactly as it did.
 
 **Section 7 (Retainer/Mantenimiento) has been removed from the landing**, and its number is retired rather than reused, so the sections that follow keep the numbers they have always had. The landing no longer pitches the maintenance retainer anywhere: line D is also filtered out of the Servicios accordion in section 2. The retainer remains a product the studio sells — see the Retainer Placement Contract below for where it now lives and what MUST stay true of it.
 
 - **3b, "Cómo trabajamos"** — the reference direction's six-card "why work with us" grid. Every card MUST restate a commitment already held as data in `lib/content/**`; it MUST NOT claim speed, quality, or scale, none of which exist as facts in this repo. It sits after Proceso because five of its six cards qualify commitments Proceso has just introduced.
-- **7b, "FAQ"** — the landing's objection block, rendered through the SAME `components/pricing/faq.tsx` and the same `pricing.faq` dictionary entries the pricing page uses. It MUST NOT hold its own questions, answers, or heading. It sits immediately before the Brief form so the last thing read before the form is the answer to whatever was stopping the visitor.
+- **7b, "FAQ"** — the landing's objection block, rendered through the SAME `components/pricing/faq.tsx` and the same `pricing.faq` dictionary entries the pricing page uses. It MUST NOT hold its own questions, answers, or heading. It sits immediately before the closing section so the last thing read before the call to action is the answer to whatever was stopping the visitor.
 
-There is deliberately NO separate closing CTA band, even though the reference direction has one: sections 8 and 9 already close the page on the conversion form followed by a full-width dark-green footer, so a third closing element between them would repeat the same call twice in a row.
+**Section 8 IS the closing CTA band** (amended 2026-08-09). This paragraph used to argue that no such band was needed because section 8 was a conversion form and a third closing element between the form and the footer would repeat the same call twice. Section 8 is now the band itself — one card, one heading, one button — so the reasoning holds unchanged and the constraint it produces is the same: there MUST NOT be a further closing element between section 8 and the footer.
 
 #### Scenario: Section order matches the specified sequence
 
 - GIVEN the rendered landing page
 - WHEN sections are enumerated top to bottom
-- THEN they appear in the order Hero, Servicios, Proceso, Cómo trabajamos, Proyectos, Autoridad, Precios, FAQ, Brief/WhatsApp, Footer, with no Retainer section between Precios and FAQ
+- THEN they appear in the order Hero, Servicios, Proceso, Cómo trabajamos, Proyectos, Autoridad, Precios, FAQ, Cierre/WhatsApp, Footer, with no Retainer section between Precios and FAQ
 
 #### Scenario: The "Cómo trabajamos" grid makes no unsourced claim
 
@@ -169,13 +169,22 @@ Line D MUST remain a member of the service catalogue: `SERVICE_LINES`, the prici
 
 ### Requirement: Conversion Section Contract
 
-The Brief form + WhatsApp section MUST offer both a qualifying brief form and a one-tap WhatsApp link, per the `lead-capture` capability.
+> Amended 2026-08-09. This requirement used to read "The Brief form + WhatsApp
+> section MUST offer both a qualifying brief form and a one-tap WhatsApp link".
+> The form is no longer mounted on the landing — see the `lead-capture`
+> capability's "Offered Channels MUST Be Working Channels" for the reasoning,
+> which is that the form's backend has never been configurable without a
+> verified domain the studio does not yet own.
 
-#### Scenario: Both conversion paths are present
+Section 8 MUST close the page on a single, unambiguous call to action, per the `lead-capture` capability: an eyebrow naming the channel, a heading, and one button. It MUST NOT restate the argument the eight sections above it have already made, and it MUST NOT offer a second competing path — the whole page has been narrowing toward one action, and a choice at the last step widens it again.
 
-- GIVEN the conversion section
-- WHEN rendered
-- THEN a brief form and a WhatsApp link are both visible
+Every channel it offers MUST be one the visitor can use at that moment.
+
+#### Scenario: The conversion section offers exactly one action
+
+- GIVEN the rendered conversion section
+- WHEN its interactive elements are enumerated
+- THEN there is exactly one, a working WhatsApp link, and no form, no secondary CTA and no explanatory paragraph beside it
 
 ### Requirement: Copy Voice Constraint
 

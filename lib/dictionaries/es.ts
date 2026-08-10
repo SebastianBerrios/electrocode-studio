@@ -216,37 +216,17 @@ export const es: Dictionary = {
     backToProjectsLabel: "Ver más proyectos",
   },
   brief: {
-    heading: "Cuéntanos tu proyecto",
-    intro:
-      "Completa este breve formulario y te contactamos para conversar los detalles. Si prefieres, escríbenos directo por WhatsApp.",
-    serviceLineLabel: "Línea de servicio",
-    serviceLinePlaceholder: "Selecciona una línea de servicio",
-    budgetBandLabel: "Presupuesto estimado",
-    budgetBandPlaceholder: "Selecciona un rango",
-    nameLabel: "Nombre",
-    emailLabel: "Correo electrónico",
-    phoneLabel: "Teléfono",
-    phoneOptionalNote: "opcional",
-    projectDescriptionLabel: "Cuéntanos sobre tu proyecto",
-    submitLabel: "Enviar",
-    submittingLabel: "Enviando…",
-    errorSummaryHeading: "Revisa los siguientes campos:",
-    sendFailedHeading: "No pudimos enviar tu mensaje",
-    sendFailedBody:
-      "Ocurrió un problema al enviar tu información. Tus datos se mantienen en el formulario: puedes intentarlo de nuevo o escribirnos directo por WhatsApp.",
-    rejectedHeading: "No pudimos procesar tu envío",
-    rejectedBody:
-      "Tu mensaje no pudo completarse. Puedes intentarlo de nuevo o escribirnos directo por WhatsApp contándonos tu línea de servicio y una breve descripción de tu proyecto.",
-    whatsappFallbackLabel: "Escribir por WhatsApp",
-    noscriptHeading: "Este formulario necesita JavaScript",
-    noscriptBody:
-      "Tu navegador tiene JavaScript desactivado, así que el formulario no puede enviarse. Escríbenos por WhatsApp contándonos qué línea de servicio te interesa y una breve descripción de tu proyecto.",
-    whatsappAsideHeading: "¿Prefieres WhatsApp?",
-    whatsappAsideBody:
-      "Escríbenos directo contándonos tu línea de servicio y una breve descripción de tu proyecto.",
+    eyebrow: "Conversemos por WhatsApp",
+    // "proyecto" is what the line turns on — the studio is asking about the
+    // visitor's work, not about a meeting — so it is the word that carries the
+    // colour. Same split as `hero.heading` and `wayOfWorking.heading` above.
+    //
+    // The question form is deliberate: the header CTA, the hero and the footer
+    // all say "Cuéntanos tu proyecto" on the way DOWN to this card, so
+    // repeating those exact words here would land as the fourth printing of
+    // one sentence instead of as the moment it finally gets asked.
+    heading: { lead: "¿Empezamos tu", accent: "proyecto?" },
     whatsappCtaLabel: "Escribir por WhatsApp",
-    whatsappOnlyBody:
-      "Nuestro formulario de brief no está disponible por el momento. Escríbenos directamente por WhatsApp contándonos tu línea de servicio y una breve descripción de tu proyecto, y seguimos la conversación ahí.",
   },
   gracias: {
     heading: "Gracias por tu interés",

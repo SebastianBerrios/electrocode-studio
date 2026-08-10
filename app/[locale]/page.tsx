@@ -52,9 +52,10 @@ export const dynamic = "force-static";
  * The locale landing page. It composes the numbered sections `specs/
  * landing-narrative/spec.md`'s "Fixed Section Order" requires: 1 (Hero, PR 2),
  * 2 (Servicios, PR 3a), 3 (Proceso, PR 3a), 4 (Proyectos, PR 3a), 5
- * (Autoridad, PR 3b), 6 (Precios summary, PR 3b/4), 8 (Brief/WhatsApp
- * conversion, task 6.7). The footer (site chrome, not a numbered landing
- * section) is rendered by `app/[locale]/layout.tsx`, unchanged.
+ * (Autoridad, PR 3b), 6 (Precios summary, PR 3b/4), 8 (Cierre/WhatsApp
+ * conversion, task 6.7 — the brief form it used to render is unmounted, see
+ * `components/sections/brief.tsx`). The footer (site chrome, not a numbered
+ * landing section) is rendered by `app/[locale]/layout.tsx`, unchanged.
  *
  * **Section 7 (Retainer/Mantenimiento) is deliberately absent**, and the spec's
  * "Fixed Section Order" and "Retainer Section Contract" requirements have been

@@ -1,157 +1,94 @@
+import { MessageCircle } from "lucide-react";
 import { WHATSAPP } from "@/lib/content/contact";
 import { getDictionary } from "@/lib/dictionaries";
-import { isBriefFormConfigured } from "@/lib/brief/config";
-import { SERVICE_LINES } from "@/lib/content/service-lines";
-import { BUDGET_BANDS } from "@/lib/brief/schema";
-import { BriefForm } from "@/components/brief/brief-form";
 import type { Locale } from "@/lib/content/locales";
 
 /**
- * Server Component: landing section 8, the conversion section. Task 6.6,
- * and this batch's overriding rule.
+ * Server Component: landing section 8, the conversion section. Task 6.6.
  *
- * `BRIEF_FROM_EMAIL` needs DNS domain verification with the email provider,
- * and the studio has no owned domain today (deploying to a `.vercel.app`
- * subdomain) — every submission would fail at the provider until that is
- * done. `isBriefFormConfigured()` (`lib/brief/config.ts`, server-only) is
- * the single gate: when the required environment variables are absent, this
- * section renders the WhatsApp path ONLY — no form markup, no input a
- * visitor can type into that silently goes nowhere. Same fail-closed
- * discipline as `checkAbuseSignals()` without its HMAC secret, and as the
- * `pending`/`set` discriminant already used throughout `lib/content/**`.
+ * ---
  *
- * The WhatsApp link is rendered in BOTH branches — `specs/lead-capture/
- * spec.md`'s "WhatsApp Escape Hatch" requires it to function independently
- * of the brief form's backend, not only as a fallback for when the form is
- * absent.
+ * **The brief form no longer renders here (2026-08-09).** This section used
+ * to branch on `isBriefFormConfigured()` (`lib/brief/config.ts`): with the
+ * email provider's environment variables present it rendered `BriefForm` —
+ * eight fields, a `<noscript>` explanation, and a WhatsApp aside — and
+ * without them it rendered a paragraph apologising for the form's absence
+ * next to a WhatsApp link. It is now one closing call to action in every
+ * case: an eyebrow, a heading, and a single WhatsApp button.
  *
- * **No longer calls `issueFormToken()` (2026-07-31, remediation of
- * `verify-report-final.md` finding C2)**: this Server Component renders once,
- * at build time, on this statically prerendered route — so a token issued
- * here would be baked identically into every visitor's HTML, exactly the bug
- * C2 found. `components/brief/brief-form.tsx` now fetches its own token via
- * a Server Action (`lib/brief/issue-token.ts`) once mounted in the visitor's
- * browser. See that file's doc comment.
+ * Two things drove that. The first is that the configured branch was never
+ * reachable in production — `BRIEF_FROM_EMAIL` needs DNS domain verification
+ * with the provider, and the studio has no owned domain today (it deploys to
+ * a `.vercel.app` subdomain) — so the only page anyone has ever seen was the
+ * apology. The second is that the apology was the WORST version of that page:
+ * it spent its most valuable position explaining an internal outage to a
+ * visitor who cannot act on it, and buried the one channel that does work
+ * under four lines of it.
+ *
+ * So the honest form of this section is the one that only ever offers what
+ * actually works. `specs/lead-capture/spec.md` has been amended to record
+ * that — the "Brief Form Presence" requirement was replaced rather than left
+ * to contradict this file, the same call made when the retainer section was
+ * removed from the landing (see `app/[locale]/page.tsx`).
+ *
+ * **The form's code is intentionally still in the repo**, unused:
+ * `components/brief/brief-form.tsx` and all of `lib/brief/**` (validation,
+ * abuse signals, token issuance, notification, the `/[locale]/gracias`
+ * confirmation route it redirects to) are untouched. Unlike
+ * `components/sections/retainer.tsx` and `components/ui/hero-parallax.tsx`,
+ * which were deleted with their last consumer because the studio had decided
+ * against what they showed, nothing here was decided against — the form is
+ * waiting on a domain. Deleting it would mean rebuilding a validated,
+ * abuse-checked, spec'd submission path to get back to where the repo
+ * already is. Re-mounting it is a matter of importing `BriefForm` again on a
+ * route of its own once the provider is verified.
+ *
+ * **`id="brief"` MUST stay.** `landingAnchor(locale, "brief")` is the target
+ * of the header CTA, the hero's primary CTA, the "Cómo trabajamos" bento CTA
+ * and the footer link, and none of those are structurally verified — see
+ * `hero-header.tsx`'s note on both anchor casts.
+ *
+ * **`WHATSAPP.status` still gates the button.** With no number on record this
+ * card renders no CTA at all rather than a dead `wa.me` link — the same
+ * `pending`/`set` discipline used throughout `lib/content/**`. The number IS
+ * on record today (`lib/content/contact.ts`), so this is a structural
+ * guarantee, not a live branch.
  */
 export function Brief({ locale }: { locale: Locale }) {
   const { brief } = getDictionary(locale);
-  const configured = isBriefFormConfigured();
   const whatsappUrl = WHATSAPP.status === "set" ? WHATSAPP.url : null;
-
-  const serviceLines = Object.values(SERVICE_LINES).map((line) => ({
-    id: line.id,
-    label: line.name[locale],
-  }));
-  const budgetBands = Object.values(BUDGET_BANDS).map((band) => ({
-    id: band.id,
-    label: band.label[locale],
-  }));
 
   return (
     <section id="brief" className="py-20 md:py-32">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* See `authority.tsx` for why the two-column header became a
-            centred stack in the green restyle. */}
-        <div className="reveal mx-auto max-w-3xl text-center">
-          <h2 className="text-4xl md:text-6xl">{brief.heading}</h2>
-          <p className="mt-5 text-base text-muted-foreground">{brief.intro}</p>
+      <div className="mx-auto max-w-7xl px-4">
+        {/* The card is what makes this read as a closing statement rather
+            than a ninth section of argument: every other section on the page
+            sets its heading directly on the background, so lifting this one
+            onto a surface marks it as the end of the page without needing a
+            larger type scale than the rest of the site uses. */}
+        <div className="reveal mx-auto flex max-w-4xl flex-col items-center rounded-3xl border border-border bg-card px-6 py-16 text-center sm:px-12 md:py-20">
+          {/* Same eyebrow composition as `way-of-working.tsx` — accent green,
+              `size-4` glyph, `aria-hidden` because the label beside it
+              already says the same thing. */}
+          <p className="inline-flex items-center gap-2 text-sm font-semibold text-accent-signal">
+            <MessageCircle aria-hidden="true" className="size-4" />
+            {brief.eyebrow}
+          </p>
+          <h2 className="mt-4 text-4xl md:text-6xl">
+            {brief.heading.lead}{" "}
+            <span className="text-accent-signal">{brief.heading.accent}</span>
+          </h2>
+          {whatsappUrl ? (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-10 inline-flex rounded-full bg-accent-signal px-8 py-4 text-base font-semibold text-accent-signal-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-signal"
+            >
+              {brief.whatsappCtaLabel}
+            </a>
+          ) : null}
         </div>
-
-        {configured ? (
-          <div className="mt-12 grid gap-10 lg:grid-cols-[2fr_1fr]">
-            {/*
-              Without JavaScript the form renders but cannot be submitted.
-              The C2 remediation moved the dwell token from build time to a
-              per-visit Server Action fetched on mount, which is what makes a
-              submission six hours after a deploy work at all — but it also
-              means `issuedAt`/`signature` are absent from the static HTML, and
-              `checkAbuseSignals()` fails closed without them.
-
-              That tradeoff is unavoidable: a per-visit timestamp on a
-              statically prerendered page needs a client round-trip. What is
-              avoidable is letting a no-JS visitor fill in eight fields and
-              press a button that silently rejects them. So we say it, and
-              point at the path that does work — the same fail-closed honesty
-              the email-configuration gate above already applies.
-            */}
-            <noscript>
-              <div
-                role="alert"
-                className="rounded-md border border-border bg-card p-4 text-sm"
-              >
-                <p className="font-medium">{brief.noscriptHeading}</p>
-                <p className="mt-1 text-muted-foreground">
-                  {brief.noscriptBody}
-                </p>
-                {whatsappUrl ? (
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-block font-medium text-accent-signal underline underline-offset-4"
-                  >
-                    {brief.whatsappFallbackLabel}
-                  </a>
-                ) : null}
-              </div>
-            </noscript>
-            <BriefForm
-              locale={locale}
-              serviceLines={serviceLines}
-              budgetBands={budgetBands}
-              whatsappUrl={whatsappUrl}
-              copy={{
-                serviceLineLabel: brief.serviceLineLabel,
-                serviceLinePlaceholder: brief.serviceLinePlaceholder,
-                budgetBandLabel: brief.budgetBandLabel,
-                budgetBandPlaceholder: brief.budgetBandPlaceholder,
-                nameLabel: brief.nameLabel,
-                emailLabel: brief.emailLabel,
-                phoneLabel: brief.phoneLabel,
-                phoneOptionalNote: brief.phoneOptionalNote,
-                projectDescriptionLabel: brief.projectDescriptionLabel,
-                submitLabel: brief.submitLabel,
-                submittingLabel: brief.submittingLabel,
-                errorSummaryHeading: brief.errorSummaryHeading,
-                sendFailedHeading: brief.sendFailedHeading,
-                sendFailedBody: brief.sendFailedBody,
-                rejectedHeading: brief.rejectedHeading,
-                rejectedBody: brief.rejectedBody,
-                whatsappFallbackLabel: brief.whatsappFallbackLabel,
-              }}
-            />
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <p className="text-sm font-medium text-card-foreground">
-                {brief.whatsappAsideHeading}
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">{brief.whatsappAsideBody}</p>
-              {whatsappUrl ? (
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-medium"
-                >
-                  {brief.whatsappCtaLabel}
-                </a>
-              ) : null}
-            </div>
-          </div>
-        ) : (
-          <div className="reveal mt-10 max-w-xl rounded-2xl border border-border bg-card p-8">
-            <p className="text-sm text-muted-foreground">{brief.whatsappOnlyBody}</p>
-            {whatsappUrl ? (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-medium"
-              >
-                {brief.whatsappCtaLabel}
-              </a>
-            ) : null}
-          </div>
-        )}
       </div>
     </section>
   );
