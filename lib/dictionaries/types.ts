@@ -463,13 +463,13 @@ export type BriefDictionary = {
  * headings and labels wrapped around that data, the same dividing line every
  * other section already uses.
  *
- * **`demoPendingNote` must not become a promise.** No template is deployed, so
- * a gallery tile shows its screenshot and no "ver ejemplo" link. This string
- * states that plainly and deliberately names no date — the studio has not
- * committed to one, and inventing "próximamente" here would be the same class
- * of fabrication `PriceEntry`'s `pending` state and `turnaroundPendingNote`
- * already exist to prevent. Delete this key the day every `demo` in
- * `lib/content/templates.ts` is `set`; do not soften it before then.
+ * **`demoPendingNote` was here and is gone, on purpose.** While nothing was
+ * deployed, the gallery carried a line saying so plainly and naming no date.
+ * Every `demo` in `lib/content/templates.ts` is now `set` and every tile links
+ * to a live demo, so the note had become false — and a stale disclaimer is
+ * worse than none, because it tells a visitor the thing in front of them does
+ * not exist. Its own doc comment said to delete it on exactly this day rather
+ * than soften it into "ya disponible", so it was deleted.
  */
 export type TemplatesDictionary = {
   readonly eyebrow: string;
@@ -493,16 +493,8 @@ export type TemplatesDictionary = {
   readonly featuresHeading: string;
   readonly stepsHeading: string;
   readonly bestForLabel: string;
-  /**
-   * Label for a tile's link to its published demo. Has NO consumer today —
-   * every `demo` in `lib/content/templates.ts` is `pending`, so
-   * `components/templates/template-card.tsx` renders no anchor at all. It is
-   * declared now so that publishing a demo costs one data edit and no
-   * dictionary change, the same reason `authority.visitCta` exists while
-   * `ACADEMY.state` is still `no-link`.
-   */
+  /** Label on a tile's link to its published demo. */
   readonly demoCta: string;
-  readonly demoPendingNote: string;
   readonly viewPricingLink: string;
   readonly ctaHeading: string;
   readonly ctaBody: string;

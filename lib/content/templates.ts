@@ -13,13 +13,14 @@
  *
  * ---
  *
- * **`demo` is `Commitment<string>`, and today every single one is `pending`.**
- * None of these templates is deployed. The honest consequence is that a gallery
- * tile renders its screenshot and no "ver ejemplo" link, exactly the way
+ * **`demo` is `Commitment<string>`, and all sixteen are now `set`.** They were
+ * `pending` until the gallery was actually deployed — a tile with a pending
+ * demo renders its screenshot and no "ver ejemplo" link, exactly the way
  * `portfolioLink()` (`lib/content/projections.ts`) returns `undefined` rather
- * than pointing at a case study that has not shipped — the same defect class
- * this change set has already had to fix four times. Filling a URL in here is
- * all that a future deployment needs; no component changes with it.
+ * than pointing at a case study that has not shipped. Switching them over cost
+ * one data edit and no component change, which is what that modelling bought.
+ * Each URL was verified returning 200 with real content before being written
+ * here; see `deployed()` below for why they are not derived.
  *
  * **Every `features` entry is a behaviour verified in the template source, not
  * a benefit written for this page.** The wedding list was read off
@@ -99,19 +100,49 @@ export type Template = {
   readonly bestFor: Localized<string>;
   readonly preview: MediaAsset;
   /**
-   * The published demo. `pending` for every entry today — nothing is deployed —
-   * and a tile with a pending demo renders no link at all. See this module's
-   * doc comment.
+   * The published demo. `set` for every entry today; a tile whose demo is
+   * `pending` renders no link at all. See this module's doc comment.
    */
   readonly demo: Commitment<string>;
 };
 
 /**
- * Neither family has a deployed demo yet, so this is written once instead of
- * seventeen times. Replace a template's `demo` with `{ status: "set", value:
- * "https://..." }` as each one goes live; nothing else has to change.
+ * Where the built demos are served from — one static site holding every
+ * template under `/<family>/<slug>/`, built by the `electrocode-templates`
+ * repository's `build.mjs`.
+ *
+ * A constant rather than sixteen literal origins: pointing the gallery at a
+ * custom domain later is one edit here, not sixteen chances to leave one
+ * behind.
  */
-const NO_DEMO: Commitment<string> = { status: "pending" };
+const DEMO_ORIGIN = "https://electrocode-templates.vercel.app";
+
+/**
+ * A template whose demo is live.
+ *
+ * **Deliberately called per template rather than derived from `family`/`slug`
+ * inside the projection.** A derived URL would hand every future entry a demo
+ * link the moment it is added to this file — including one whose demo has not
+ * been deployed yet — which is exactly the dead-link failure `Commitment`
+ * exists to prevent. Calling this is the deliberate act that says "I checked,
+ * it is live". All sixteen below were verified returning 200 with real content
+ * before being switched over.
+ *
+ * The `family`/`slug` arguments repeat what the entry already declares, so
+ * `checkTemplateDemoMatchesItsSlug` (`lib/content/invariants.ts`) fails the
+ * build if a copy-pasted entry ends up pointing at its neighbour's demo.
+ */
+function deployed(family: TemplateFamilyId, slug: string): Commitment<string> {
+  return { status: "set", value: `${DEMO_ORIGIN}/${family}/${slug}/` };
+}
+
+/**
+ * For a template that exists in the catalogue but is not deployed yet. Nothing
+ * uses it today — all sixteen are live — and it stays because the honest state
+ * for a new design added before its demo ships is this one, not a guessed URL.
+ * A tile with a pending demo renders its screenshot and no link.
+ */
+export const NO_DEMO: Commitment<string> = { status: "pending" };
 
 export const TEMPLATE_FAMILIES = {
   biolinks: {
@@ -226,7 +257,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Retro Beige: fondo beige de papel, nombre en tipografía de máquina de escribir y botones de enlace con sombra dura",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "01-retro-beige"),
   },
   {
     slug: "02-festive-dark",
@@ -242,7 +273,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Festive Dark: fondo verde oscuro con nieve y adornos navideños sobre una lista de enlaces",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "02-festive-dark"),
   },
   {
     slug: "03-clean-soft",
@@ -258,7 +289,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Clean Soft: fondo blanco cálido, descripción en serif itálica y botones blancos con sombra suave",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "03-clean-soft"),
   },
   {
     slug: "04-glass-blue",
@@ -274,7 +305,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Glass Blue: paneles de cristal esmerilado sobre un fondo azul degradado",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "04-glass-blue"),
   },
   {
     slug: "05-neon-pink",
@@ -290,7 +321,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Neon Pink: fondo magenta tramado con botones gruesos y una franja de texto desplazándose",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "05-neon-pink"),
   },
   {
     slug: "06-brutalist-mono",
@@ -306,7 +337,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Brutalist Mono: composición en blanco y negro con retícula visible y filas de enlaces numeradas",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "06-brutalist-mono"),
   },
   {
     slug: "07-terminal-green",
@@ -322,7 +353,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Terminal Green: ventana de terminal negra con texto verde y enlaces escritos como comandos de consola",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "07-terminal-green"),
   },
   {
     slug: "08-sunset-gradient",
@@ -338,7 +369,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Sunset Gradient: degradado cálido de atardecer con paneles de cristal blanco encima",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "08-sunset-gradient"),
   },
   {
     slug: "09-noir-luxe",
@@ -354,7 +385,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Noir Luxe: fondo casi negro con filetes dorados finos y tipografía serif de alto contraste",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "09-noir-luxe"),
   },
   {
     slug: "10-y2k-sticker",
@@ -370,7 +401,7 @@ export const BIOLINK_TEMPLATES: readonly Template[] = [
         es: "Biolink Y2K Sticker: damero pastel con stickers torcidos y destellos alrededor de los enlaces",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("biolinks", "10-y2k-sticker"),
   },
 ];
 
@@ -397,7 +428,7 @@ export const WEDDING_TEMPLATES: readonly Template[] = [
         es: "Invitación Aurum Wine II: fondo vino con guirnaldas doradas y los nombres de la pareja en serif",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("invitaciones", "aurum-wine-ii"),
   },
   {
     slug: "deluxe-classic",
@@ -413,7 +444,7 @@ export const WEDDING_TEMPLATES: readonly Template[] = [
         es: "Invitación Deluxe Classic: portada dividida entre fotografía y tarjeta grabada con monograma",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("invitaciones", "deluxe-classic"),
   },
   {
     slug: "hojas",
@@ -429,7 +460,7 @@ export const WEDDING_TEMPLATES: readonly Template[] = [
         es: "Invitación Hojas: follaje verde y marco dorado alrededor de los nombres de la pareja",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("invitaciones", "hojas"),
   },
   {
     slug: "magnolias-olive-ii",
@@ -445,7 +476,7 @@ export const WEDDING_TEMPLATES: readonly Template[] = [
         es: "Invitación Magnolias Olive II: fondo oliva oscuro con magnolias y olivo dibujados a línea y texto crema",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("invitaciones", "magnolias-olive-ii"),
   },
   {
     slug: "vintage",
@@ -461,7 +492,7 @@ export const WEDDING_TEMPLATES: readonly Template[] = [
         es: "Invitación Vintage: bandas crema y menta separadas por ondas, con medallones dorados",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("invitaciones", "vintage"),
   },
   {
     slug: "white",
@@ -477,7 +508,7 @@ export const WEDDING_TEMPLATES: readonly Template[] = [
         es: "Invitación White: fondo blanco con filetes dorados finos y tipografía script",
       },
     },
-    demo: NO_DEMO,
+    demo: deployed("invitaciones", "white"),
   },
 ];
 

@@ -93,10 +93,13 @@
  *     description a screen-reader user receives.
  * 16. **No empty template family** — a family with no designs would render an
  *     empty gallery under a heading promising models.
- * 17. **Every `set` template demo is an absolute URL** — these templates deploy
- *     as standalone sites, so an internal-looking path would be a dead link on
- *     a surface `checkInternalLinksResolve` does not walk. Cannot fire today
- *     (every demo is `pending`), which is when it is cheap to add.
+ * 17. **Every `set` template demo points at its own template** — the most
+ *     likely edit here is copying a neighbouring entry and forgetting to change
+ *     the slug, which yields a live link to the wrong design. See
+ *     `checkTemplateDemoMatchesItsSlug`.
+ * 18. **Every `set` template demo is an absolute URL** — the demos are their own
+ *     standalone static site, so an internal-looking path would be a dead link
+ *     on a surface `checkInternalLinksResolve` does not walk.
  */
 
 import "server-only";
@@ -750,15 +753,39 @@ function checkTemplateFamiliesAreNotEmpty(violations: string[]): void {
 }
 
 /**
+ * A published demo must point at ITS OWN template.
+ *
+ * `deployed(family, slug)` (`lib/content/templates.ts`) takes the family and
+ * slug as arguments even though the entry already declares both, so the demos
+ * repository's URL layout stays visible at the call site. That redundancy is
+ * only safe if something checks it: the most likely edit to this catalogue is
+ * copying a neighbouring entry and changing the name, direction and image while
+ * leaving `deployed(...)` pointing at the design it was copied from. The result
+ * would be a live, 200-returning link to the wrong template — a defect no
+ * status check and no screenshot review would catch.
+ */
+function checkTemplateDemoMatchesItsSlug(violations: string[]): void {
+  for (const template of TEMPLATES) {
+    if (template.demo.status !== "set") continue;
+    const expectedSuffix = `/${template.family}/${template.slug}/`;
+    if (!template.demo.value.endsWith(expectedSuffix)) {
+      violations.push(
+        `Template "${template.slug}" has demo "${template.demo.value}", which does not end with ` +
+          `"${expectedSuffix}". A copied entry is pointing at another template's demo.`,
+      );
+    }
+  }
+}
+
+/**
  * A published demo must be an external URL.
  *
- * `Template.demo` is `pending` for every entry today, so this cannot fire yet —
- * which is exactly when it is cheap to add. The failure it guards is specific:
- * these templates deploy as their own standalone sites, so the only correct
- * value is an absolute URL. An internal-looking path here would render an
- * `<a href="/algo">` on this site pointing at a route that does not exist, the
- * dead-link class `checkInternalLinksResolve` covers for the showcase and
- * nothing covered for this surface.
+ * The failure it guards is specific: the demos are their own standalone static
+ * site (`electrocode-templates`), so the only correct value is an absolute URL.
+ * An internal-looking path here would render an `<a href="/algo">` on this site
+ * pointing at a route that does not exist — the dead-link class
+ * `checkInternalLinksResolve` covers for the showcase and nothing covered for
+ * this surface.
  */
 function checkTemplateDemosAreExternal(violations: string[]): void {
   for (const template of TEMPLATES) {
@@ -856,6 +883,7 @@ export async function assertContentInvariants(): Promise<void> {
   checkUniqueTemplateSlugs(violations);
   checkNoEmptyTemplateCopy(violations);
   checkTemplateFamiliesAreNotEmpty(violations);
+  checkTemplateDemoMatchesItsSlug(violations);
   checkTemplateDemosAreExternal(violations);
 
   if (violations.length === 0) return;

@@ -161,11 +161,10 @@ export default async function TemplateFamilyPage({
           <h2 className="reveal text-2xl font-medium md:text-3xl">
             {templates.galleryHeading}
           </h2>
-          {/* Says plainly that nothing is deployed. See `TemplatesDictionary`'s
-              doc comment for why this must not become a "próximamente". */}
-          <p className="mt-3 max-w-2xl rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-            {templates.demoPendingNote}
-          </p>
+          {/* A dashed note used to sit here saying no demo was online yet. It
+              came out with the demos going live — every tile now carries a real
+              "ver ejemplo" link, so the note described the opposite of what the
+              visitor is looking at. See `TemplatesDictionary`'s doc comment. */}
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {designs.map((template) => (
               <TemplateCard

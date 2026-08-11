@@ -119,8 +119,7 @@ export const es: Dictionary = {
   },
   // Structural labels only. Every family's name, tagline, feature list, steps
   // and price come from `lib/content/templates.ts` and `lib/content/pricing.ts`
-  // — see `TemplatesDictionary`'s doc comment for the dividing line, and for
-  // why `demoPendingNote` states the absence without promising a date.
+  // — see `TemplatesDictionary`'s doc comment for the dividing line.
   templates: {
     eyebrow: "Diseños ya terminados",
     // "elegir" is what the section turns on — these are not commissioned from
@@ -136,11 +135,7 @@ export const es: Dictionary = {
     featuresHeading: "Qué incluye",
     stepsHeading: "Cómo la obtienes",
     bestForLabel: "Ideal para",
-    // No lo renderiza nadie todavía: ninguna plantilla tiene demo publicada.
-    // Ver el comentario de `demoCta` en `types.ts`.
     demoCta: "Ver ejemplo",
-    demoPendingNote:
-      "Todavía no hay demos en línea. Cada imagen es una captura de la plantilla real, tal como se ve.",
     viewPricingLink: "Ver precio y condiciones",
     ctaHeading: "¿Te gustó alguno?",
     ctaBody:
