@@ -493,6 +493,26 @@ export type TemplatesDictionary = {
   readonly featuresHeading: string;
   readonly stepsHeading: string;
   readonly bestForLabel: string;
+  /**
+   * Caption under the phone frame in the family header. It has to say the
+   * scrolling happens INSIDE the frame, because a page that scrolls and a
+   * device that scrolls are two different gestures on the same screen and
+   * nothing else on the page distinguishes them.
+   */
+  readonly previewHint: string;
+  /**
+   * The one or two words inside the round badge hanging off the phone's
+   * shoulder. It sits in a 5rem circle, so anything past about ten characters
+   * wraps to three lines and stops reading as a badge.
+   */
+  readonly previewBadge: string;
+  /**
+   * Accessible name for that frame's `<iframe>`. Carries a `{name}` placeholder
+   * the component substitutes with the design's own name — an unnamed iframe is
+   * announced as "frame" and a screen-reader user has no way to tell which of
+   * the family's designs they just entered.
+   */
+  readonly previewFrameLabel: string;
   /** Label on a tile's link to its published demo. */
   readonly demoCta: string;
   readonly viewPricingLink: string;

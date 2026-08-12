@@ -424,6 +424,28 @@
 }
 
 /*
+ * The scroll cue under the badge on `components/templates/template-phone.tsx`.
+ * It drifts rather than bounces: the gesture it is asking for is a slow drag
+ * inside a frame, and a hard bounce reads as "tap me". Disabled site-wide under
+ * `prefers-reduced-motion` by the block below.
+ */
+@keyframes chevron-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translateY(0.35rem);
+    opacity: 1;
+  }
+}
+
+.animate-chevron-drift {
+  animation: chevron-drift 1.8s ease-in-out infinite;
+}
+
+/*
  * Hard constraint: every animation must be disabled or reduced under
  * `prefers-reduced-motion`. This covers every CSS animation/transition
  * site-wide, including `.reveal` above and `tw-animate-css`'s utilities.
