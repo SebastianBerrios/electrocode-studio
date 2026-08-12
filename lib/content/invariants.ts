@@ -100,6 +100,10 @@
  * 18. **Every `set` template demo is an absolute URL** — the demos are their own
  *     standalone static site, so an internal-looking path would be a dead link
  *     on a surface `checkInternalLinksResolve` does not walk.
+ * 19. **Every family's `featured` design exists and is deployed** — it is the
+ *     one loaded into the phone frame at the top of the family page, so a
+ *     mistyped slug or a `pending` demo leaves an empty device under a heading
+ *     promising a preview. See `checkFamilyFeaturedTemplateIsLive`.
  */
 
 import "server-only";
@@ -122,6 +126,7 @@ import { RETAINER_COMMITMENTS } from "./retainer";
 import {
   TEMPLATES,
   TEMPLATE_FAMILIES,
+  featuredTemplate,
   templatesByFamily,
 } from "./templates";
 import type { Localized } from "./types";
@@ -804,6 +809,37 @@ function checkTemplateDemosAreExternal(violations: string[]): void {
 }
 
 /**
+ * A family's `featured` design must be one of its own, and must be deployed.
+ *
+ * `TemplatePhone` (`components/templates/template-phone.tsx`) frames that
+ * template's demo URL at the top of the family page. Two ways it silently ends
+ * up with nothing to frame, neither of which any type catches: the slug is
+ * typed as a plain `string` (so a typo compiles), and a design's `demo` can be
+ * `pending` (so a family could legitimately feature a design whose demo has not
+ * shipped). Both render an empty device under a heading promising a preview —
+ * the same "surface shipped before its target exists" defect this file already
+ * gates four other ways.
+ */
+function checkFamilyFeaturedTemplateIsLive(violations: string[]): void {
+  for (const family of Object.values(TEMPLATE_FAMILIES)) {
+    const template = featuredTemplate(family.id);
+    if (!template) {
+      violations.push(
+        `Template family "${family.id}" features "${family.featured}", which is not one of its designs. ` +
+          `The phone frame at the top of that page would render nothing.`,
+      );
+      continue;
+    }
+    if (template.demo.status !== "set") {
+      violations.push(
+        `Template family "${family.id}" features "${template.slug}", whose demo is "${template.demo.status}". ` +
+          `The phone frame needs a deployed URL to load — feature a design that is live, or deploy this one.`,
+      );
+    }
+  }
+}
+
+/**
  * Task 3.6's compensating control: a retainer commitment marked `"set"` in
  * `lib/content/retainer.ts` must actually carry non-blank content for every
  * locale. A `"pending"` commitment is exempt — that is the designed
@@ -885,6 +921,7 @@ export async function assertContentInvariants(): Promise<void> {
   checkTemplateFamiliesAreNotEmpty(violations);
   checkTemplateDemoMatchesItsSlug(violations);
   checkTemplateDemosAreExternal(violations);
+  checkFamilyFeaturedTemplateIsLive(violations);
 
   if (violations.length === 0) return;
 
