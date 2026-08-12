@@ -6,19 +6,18 @@ import type { Template } from "@/lib/content/templates";
 /**
  * Server Component: one design in a family's gallery.
  *
- * **The tile is not a link, and that is the designed state — not an
- * oversight.** `Template.demo` is a `Commitment<string>` and every entry is
- * `pending` today, because no template is deployed. The reference direction's
- * gallery hangs a "ver ejemplo" on every card; putting one here would point at
- * nothing. This is the same call `portfolioLink()` (`lib/content/
- * projections.ts`) makes for a project whose case study has not shipped, and
- * the same defect class — a link rendered before its target exists — that this
- * change set has already had to fix four times.
+ * **The "ver ejemplo" link is conditional on `Template.demo`, and the `pending`
+ * branch stays even though all sixteen entries are `set` today.** `demo` is a
+ * `Commitment<string>` precisely so a design added to
+ * `lib/content/templates.ts` before its demo ships renders its screenshot and
+ * no link, instead of a link pointing at nothing. That is the same call
+ * `portfolioLink()` (`lib/content/projections.ts`) makes for a project whose
+ * case study has not shipped, and the same defect class — a link rendered
+ * before its target exists — that this change set has already had to fix four
+ * times.
  *
- * The `set` branch below is therefore unreachable with today's data and is
- * written anyway: filling one `demo` in `lib/content/templates.ts` is all a
- * deployment should cost, with no component edit and no second review of this
- * file.
+ * So deploying a new demo costs one `deployed()` call in the content module,
+ * with no component edit and no second review of this file.
  *
  * **The frame crops rather than letter-boxes.** Captures are portrait phone
  * screens (420×840 at 2×); a gallery of full-height phones is a grid of
