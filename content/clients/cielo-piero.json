@@ -1,0 +1,202 @@
+{
+  "slug": "cielo-piero",
+  "theme": {
+    "preset": "noche-estrellada"
+  },
+  "couple": {
+    "first": "Cielo",
+    "second": "Piero"
+  },
+  "tagline": "Nuestra Boda",
+  "meta": {
+    "title": "Cielo & Piero — Nuestra boda",
+    "description": "Acompáñanos a celebrar el amor de Cielo y Piero el 10 de octubre de 2026."
+  },
+  "displayDate": "10.10.2026",
+  "countdownTarget": "2026-10-10T13:30:00-05:00",
+  "welcome": {
+    "heading": "Bienvenidos a la invitación de",
+    "subheading": "La música de fondo es parte de la experiencia",
+    "withMusicLabel": "Ingresar con música",
+    "withoutMusicLabel": "Ingresar sin música"
+  },
+  "hero": {
+    "quote": "Con el corazón lleno de alegría, queremos que seas parte del día más importante de nuestras vidas."
+  },
+  "music": {
+    "src": "/clients/cielo-piero/audio/song.mp3",
+    "title": "Hymn for the Weekend"
+  },
+  "guests": {
+    "title": "Estás invitado",
+    "message": "Tu presencia hará que esta celebración sea aún más especial."
+  },
+  "events": [
+    {
+      "id": "ceremonia-religiosa",
+      "label": "Matrimonio Religioso",
+      "dayLabel": "Sábado 10 de Octubre — 1:30 pm",
+      "venue": "Parroquia Nuestra Señora de la Paz",
+      "address": "Buganvillas B-27, Tacna",
+      "icon": "rings",
+      "calendar": {
+        "title": "Matrimonio Religioso — Cielo & Piero",
+        "startsAt": "2026-10-10T13:30:00-05:00",
+        "durationMinutes": 90
+      }
+    },
+    {
+      "id": "matrimonio-civil",
+      "label": "Matrimonio Civil y Celebración",
+      "dayLabel": "Sábado 10 de Octubre — 4:00 pm",
+      "venue": "Majestic",
+      "address": "Gregorio Albarracín 402, Tacna",
+      "icon": "confetti",
+      "calendar": {
+        "title": "Matrimonio Civil y Celebración — Cielo & Piero",
+        "startsAt": "2026-10-10T16:00:00-05:00",
+        "durationMinutes": 420
+      }
+    }
+  ],
+  "rsvp": {
+    "title": "Confirmación de asistencia",
+    "subtitle": "Por favor confirma tu asistencia con anticipación",
+    "ctaLabel": "Confirmar asistencia",
+    "whatsappNumber": "51999999999"
+  },
+  "gallery": {
+    "title": "Nuestra Historia",
+    "subtitle": "Un instante que queda para siempre en el corazón",
+    "photos": [
+      {
+        "src": "/clients/cielo-piero/images/DSC_8909.jpg",
+        "alt": "Cielo y Piero - Foto 1"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8939.jpg",
+        "alt": "Cielo y Piero - Foto 2"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8945.jpg",
+        "alt": "Cielo y Piero - Foto 3"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8950 2.jpg",
+        "alt": "Cielo y Piero - Foto 4"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8954.jpg",
+        "alt": "Cielo y Piero - Foto 5"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8963.jpg",
+        "alt": "Cielo y Piero - Foto 6"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8972.jpg",
+        "alt": "Cielo y Piero - Foto 7"
+      },
+      {
+        "src": "/clients/cielo-piero/images/DSC_8974.jpg",
+        "alt": "Cielo y Piero - Foto 8"
+      }
+    ]
+  },
+  "party": {
+    "title": "Detalles del Evento",
+    "subtitle": "Información importante para que disfrutes al máximo de nuestra boda.",
+    "cards": [
+      {
+        "id": "dress-code",
+        "title": "Dress Code",
+        "body": [
+          "Código de vestimenta:",
+          "ELEGANTE"
+        ],
+        "icon": "dress",
+        "action": {
+          "label": "Ver más",
+          "kind": "info",
+          "modalTitle": "Dress Code — Elegante",
+          "modalBody": [
+            "Agradecemos asistir de traje / vestido formal y elegante.",
+            "Los colores blanco y marfil están reservados exclusivamente para la novia."
+          ]
+        }
+      },
+      {
+        "id": "itinerario",
+        "title": "Itinerario",
+        "body": [
+          "Cronograma y momentos",
+          "de la celebración"
+        ],
+        "icon": "notes",
+        "action": {
+          "label": "Ver itinerario",
+          "kind": "info",
+          "modalTitle": "Itinerario del Evento",
+          "modalBody": [
+            "1:30 pm — Matrimonio Religioso (Parroquia Nuestra Señora de La Paz)",
+            "4:00 pm — Matrimonio Civil (Majestic)",
+            "6:00 pm — Cóctel de bienvenida y cena",
+            "7:00 pm — ¡A bailar!",
+            "11:00 pm — Cierre de la fiesta"
+          ]
+        }
+      },
+      {
+        "id": "musica",
+        "title": "Música",
+        "body": [
+          "¿Qué tema no puede faltar",
+          "en la pista de baile?"
+        ],
+        "icon": "music",
+        "action": {
+          "label": "Sugerir canción",
+          "kind": "song"
+        }
+      }
+    ]
+  },
+  "gifts": {
+    "title": "Regalos",
+    "subtitle": "Si deseas regalarnos un detalle además de tu presencia...",
+    "modalTitle": "Datos Bancarios",
+    "modalIntro": "Tu presencia es nuestro mejor regalo. Si deseas tener un presente con nosotros, dejamos nuestras cuentas:",
+    "accounts": [
+      {
+        "label": "Cuenta BCP Soles",
+        "lines": [
+          "Banco de Crédito del Perú (BCP)",
+          "Cuenta: 38599088077032",
+          "CCI: 00238519908807703237",
+          "Titulares: Cielo & Piero"
+        ],
+        "copyValue": "38599088077032",
+        "copyActions": [
+          {
+            "label": "Copiar Cuenta",
+            "value": "38599088077032"
+          },
+          {
+            "label": "Copiar CCI",
+            "value": "00238519908807703237"
+          }
+        ]
+      }
+    ]
+  },
+  "social": {
+    "title": "Compartimos este día junto a ti",
+    "subtitle": "Comparte tus fotos y momentos usando nuestro hashtag",
+    "hashtag": "#BodaCieloyPiero",
+    "instagramUrl": "https://www.instagram.com/"
+  },
+  "footer": {
+    "credit": "ElectroCode Studio",
+    "creditUrl": "https://electrocode.dev"
+  }
+}
