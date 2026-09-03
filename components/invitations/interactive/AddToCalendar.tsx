@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { EventBlock } from "@/lib/clients/types";
-import { googleCalendarUrl, icsDataUrl, outlookCalendarUrl } from "../lib/calendar";
+import { downloadIcs, googleCalendarUrl, outlookCalendarUrl } from "../lib/calendar";
 
 export function AddToCalendar({
   event,
@@ -18,10 +18,32 @@ export function AddToCalendar({
   const menuId = useId();
 
   const location = `${event.venue}, ${event.address}`;
+
+  const handleAppleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadIcs(event.calendar, location, `${event.id}.ics`);
+    setOpen(false);
+  };
+
   const options = [
-    { label: "Google Calendar", href: googleCalendarUrl(event.calendar, location), download: false },
-    { label: "Apple", href: icsDataUrl(event.calendar, location), download: true },
-    { label: "Outlook", href: outlookCalendarUrl(event.calendar, location), download: false },
+    {
+      label: "Google Calendar",
+      href: googleCalendarUrl(event.calendar, location),
+      isExternal: true,
+      onClick: () => setOpen(false),
+    },
+    {
+      label: "Apple Calendar",
+      href: "#",
+      isExternal: false,
+      onClick: handleAppleClick,
+    },
+    {
+      label: "Outlook",
+      href: outlookCalendarUrl(event.calendar, location),
+      isExternal: true,
+      onClick: () => setOpen(false),
+    },
   ];
 
   useEffect(() => {
@@ -65,10 +87,9 @@ export function AddToCalendar({
               key={option.label}
               role="menuitem"
               href={option.href}
-              target={option.download ? undefined : "_blank"}
-              rel="noopener noreferrer"
-              download={option.download ? `${event.id}.ics` : undefined}
-              onClick={() => setOpen(false)}
+              target={option.isExternal ? "_blank" : undefined}
+              rel={option.isExternal ? "noopener noreferrer" : undefined}
+              onClick={option.onClick}
               className="block px-5 py-3 text-center text-sm text-ink transition hover:bg-band"
             >
               {option.label}

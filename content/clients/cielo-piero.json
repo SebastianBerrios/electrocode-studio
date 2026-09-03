@@ -12,7 +12,7 @@
     "title": "Cielo & Piero — Nuestra boda",
     "description": "Acompáñanos a celebrar el amor de Cielo y Piero el 10 de octubre de 2026."
   },
-  "displayDate": "10.10.2026",
+  "displayDate": "10 de octubre de 2026",
   "countdownTarget": "2026-10-10T13:30:00-05:00",
   "welcome": {
     "heading": "Bienvenidos a la invitación de",
@@ -35,7 +35,7 @@
     {
       "id": "ceremonia-religiosa",
       "label": "Matrimonio Religioso",
-      "dayLabel": "Sábado 10 de Octubre — 1:30 pm",
+      "dayLabel": "Sábado 10 de Octubre — 13:30",
       "venue": "Parroquia Nuestra Señora de la Paz",
       "address": "Buganvillas B-27, Tacna",
       "icon": "rings",
@@ -48,13 +48,13 @@
     {
       "id": "matrimonio-civil",
       "label": "Matrimonio Civil y Celebración",
-      "dayLabel": "Sábado 10 de Octubre — 4:00 pm",
+      "dayLabel": "Sábado 10 de Octubre — 15:30",
       "venue": "Majestic",
       "address": "Gregorio Albarracín 402, Tacna",
       "icon": "confetti",
       "calendar": {
         "title": "Matrimonio Civil y Celebración — Cielo & Piero",
-        "startsAt": "2026-10-10T16:00:00-05:00",
+        "startsAt": "2026-10-10T15:30:00-05:00",
         "durationMinutes": 420
       }
     }
@@ -109,7 +109,7 @@
     "cards": [
       {
         "id": "dress-code",
-        "title": "Dress Code",
+        "title": "Código de vestimenta",
         "body": [
           "Código de vestimenta:",
           "ELEGANTE"
@@ -118,10 +118,10 @@
         "action": {
           "label": "Ver más",
           "kind": "info",
-          "modalTitle": "Dress Code — Elegante",
+          "modalTitle": "Código de vestimenta — Elegante",
           "modalBody": [
             "Agradecemos asistir de traje / vestido formal y elegante.",
-            "Los colores blanco y marfil están reservados exclusivamente para la novia."
+            "Los colores blanco y marfil están reservados exclusivamente para los novios."
           ]
         }
       },
@@ -138,34 +138,28 @@
           "kind": "info",
           "modalTitle": "Itinerario del Evento",
           "modalBody": [
-            "1:30 pm — Matrimonio Religioso (Parroquia Nuestra Señora de La Paz)",
-            "4:00 pm — Matrimonio Civil (Majestic)",
-            "6:00 pm — Cóctel de bienvenida y cena",
-            "7:00 pm — ¡A bailar!",
-            "11:00 pm — Cierre de la fiesta"
+            "13:30 — Matrimonio Religioso (Parroquia Nuestra Señora de La Paz)",
+            "15:30 — Matrimonio Civil (Majestic)",
+            "18:00 — Cóctel de bienvenida y cena",
+            "19:00 — ¡A bailar!",
+            "23:00 — Cierre de la fiesta"
           ]
-        }
-      },
-      {
-        "id": "musica",
-        "title": "Música",
-        "body": [
-          "¿Qué tema no puede faltar",
-          "en la pista de baile?"
-        ],
-        "icon": "music",
-        "action": {
-          "label": "Sugerir canción",
-          "kind": "song"
         }
       }
     ]
   },
+  "playlist": {
+    "title": "Música de la Fiesta",
+    "subtitle": "¿Qué canción no puede faltar en la pista de baile?",
+    "description": "Ayúdanos a armar la playlist perfecta para nuestra noche. ¡Suma tus temas favoritos directamente en Spotify!",
+    "ctaLabel": "Agregar a la playlist",
+    "spotifyUrl": "https://open.spotify.com/playlist/4QxdqTUuV5EJP5PgZYjnOA?si=8sP7vrgcRiyIgVFKyCv1PQ&utm_source=whatsapp&pi=fBCGp6UfR6GKR"
+  },
   "gifts": {
     "title": "Regalos",
-    "subtitle": "Si deseas regalarnos un detalle además de tu presencia...",
+    "subtitle": "Hemos elegido la modalidad lluvia de sobres para los regalos. Para mayor comodidad, también dejamos nuestras cuentas:",
     "modalTitle": "Datos Bancarios",
-    "modalIntro": "Tu presencia es nuestro mejor regalo. Si deseas tener un presente con nosotros, dejamos nuestras cuentas:",
+    "modalIntro": "Hemos elegido la modalidad lluvia de sobres para los regalos, para mayor comodidad también tenemos estas opciones:",
     "accounts": [
       {
         "label": "Cuenta BCP Soles",
@@ -173,7 +167,7 @@
           "Banco de Crédito del Perú (BCP)",
           "Cuenta: 38599088077032",
           "CCI: 00238519908807703237",
-          "Titulares: Cielo & Piero"
+          "Titular: Piero"
         ],
         "copyValue": "38599088077032",
         "copyActions": [

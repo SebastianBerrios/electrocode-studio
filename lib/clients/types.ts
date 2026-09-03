@@ -41,9 +41,17 @@ export type GalleryPhoto = {
   alt: string;
 };
 
+export type PlaylistConfig = {
+  title: string;
+  subtitle: string;
+  description?: string;
+  ctaLabel: string;
+  spotifyUrl: string;
+};
+
 export type PartyCardAction = {
   label: string;
-  kind: "song" | "info";
+  kind?: "song" | "info";
   modalTitle?: string;
   modalBody?: string[];
 };
@@ -133,6 +141,7 @@ export type InvitationConfig = {
     subtitle: string;
     cards: PartyCard[];
   };
+  playlist?: PlaylistConfig;
   gifts: {
     title: string;
     subtitle: string;

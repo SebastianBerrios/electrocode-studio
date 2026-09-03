@@ -105,8 +105,15 @@
 }
 
 .invitation-wrapper .papered {
-  position: relative;
   isolation: isolate;
+}
+
+.invitation-wrapper .papered:not(.fixed) {
+  position: relative;
+}
+
+.invitation-wrapper [data-welcome-gate] {
+  position: fixed;
 }
 
 .invitation-wrapper .papered::before {

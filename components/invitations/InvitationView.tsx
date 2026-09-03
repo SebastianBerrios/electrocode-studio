@@ -11,6 +11,7 @@ import { CountdownSection } from "./sections/CountdownSection";
 import { EventsSection } from "./sections/EventsSection";
 import { GallerySection } from "./sections/GallerySection";
 import { PartySection } from "./sections/PartySection";
+import { PlaylistSection } from "./sections/PlaylistSection";
 import { GiftsSection } from "./sections/GiftsSection";
 import { SocialSection } from "./sections/SocialSection";
 import { RsvpSection } from "./sections/RsvpSection";
@@ -39,6 +40,7 @@ export function InvitationView({ invitation }: { invitation: InvitationConfig })
               <EventsSection />
               <GallerySection />
               <PartySection />
+              <PlaylistSection />
               <GiftsSection />
               <SocialSection />
               <RsvpSection />

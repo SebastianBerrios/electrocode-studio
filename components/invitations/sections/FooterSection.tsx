@@ -28,9 +28,20 @@ export function FooterSection() {
         <p className="-mt-4 font-display text-xl text-accent">{tagline}</p>
 
         <nav className="flex flex-col items-center gap-4">
-          <DialogTrigger dialog="song" className={QUICK_LINK}>
-            Sugerir canción
-          </DialogTrigger>
+          {invitation.playlist?.spotifyUrl ? (
+            <a
+              href={invitation.playlist.spotifyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={QUICK_LINK}
+            >
+              Playlist de Spotify
+            </a>
+          ) : (
+            <DialogTrigger dialog="song" className={QUICK_LINK}>
+              Sugerir canción
+            </DialogTrigger>
+          )}
           {events && events.length > 0 && (
             <AddToCalendar
               event={events[0]}

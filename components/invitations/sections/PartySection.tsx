@@ -42,7 +42,11 @@ export function PartySection() {
         <p className="mt-4 text-base text-muted sm:text-lg">{party.subtitle}</p>
       </Reveal>
 
-      <div className="mx-auto mt-12 grid max-w-md grid-cols-1 gap-6 md:max-w-4xl md:grid-cols-2 lg:max-w-6xl lg:grid-cols-3">
+      <div
+        className={`mx-auto mt-12 grid max-w-md grid-cols-1 gap-6 md:max-w-4xl md:grid-cols-2 ${
+          party.cards.length > 2 ? "lg:max-w-6xl lg:grid-cols-3" : "lg:max-w-4xl lg:grid-cols-2"
+        }`}
+      >
         {party.cards.map((card) => (
           <Card key={card.id} card={card} />
         ))}

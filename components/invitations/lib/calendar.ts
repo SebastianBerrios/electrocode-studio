@@ -64,6 +64,7 @@ export function buildIcs(event: CalendarEvent, location: string): string {
     "VERSION:2.0",
     "PRODID:-//wedding-invitation//electrocode//ES",
     "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${toCalendarStamp(start)}-electrocode@wedding-invitation`,
     `DTSTAMP:${toCalendarStamp(start)}`,
@@ -80,4 +81,20 @@ export function buildIcs(event: CalendarEvent, location: string): string {
 /** `buildIcs` output packaged as an href a plain anchor can download. */
 export function icsDataUrl(event: CalendarEvent, location: string): string {
   return `data:text/calendar;charset=utf-8,${encodeURIComponent(buildIcs(event, location))}`;
+}
+
+/** Triggers a clean blob-based ICS file download compatible with Apple / iOS / macOS. */
+export function downloadIcs(event: CalendarEvent, location: string, filename: string): void {
+  const icsContent = buildIcs(event, location);
+  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => {
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }, 100);
 }
