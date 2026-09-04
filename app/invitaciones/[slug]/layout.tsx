@@ -32,14 +32,32 @@ export async function generateMetadata({
     };
   }
 
+  const ogImage = client.meta.ogImage ?? client.gallery?.photos?.[0]?.src;
+
   return {
+    metadataBase: new URL("https://electrocode-studio.vercel.app"),
     title: client.meta.title,
     description: client.meta.description,
     openGraph: {
       title: client.meta.title,
       description: client.meta.description,
       type: "website",
-      images: client.gallery?.photos?.[0]?.src ? [client.gallery.photos[0].src] : undefined,
+      images: ogImage
+        ? [
+            {
+              url: ogImage,
+              width: 1200,
+              height: 630,
+              alt: client.meta.title,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: client.meta.title,
+      description: client.meta.description,
+      images: ogImage ? [ogImage] : undefined,
     },
   };
 }

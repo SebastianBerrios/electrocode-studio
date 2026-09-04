@@ -10,7 +10,8 @@
   "tagline": "Nuestra Boda",
   "meta": {
     "title": "Cielo & Piero — Nuestra boda",
-    "description": "Acompáñanos a celebrar el amor de Cielo y Piero el 10 de octubre de 2026."
+    "description": "Acompáñanos a celebrar el amor de Cielo y Piero el 10 de octubre de 2026.",
+    "ogImage": "/clients/cielo-piero/images/og-cover.jpg"
   },
   "displayDate": "10 de octubre de 2026",
   "countdownTarget": "2026-10-10T13:30:00-05:00",
@@ -191,6 +192,6 @@
   },
   "footer": {
     "credit": "ElectroCode Studio",
-    "creditUrl": "https://electrocode.dev"
+    "creditUrl": "https://electrocode-studio.vercel.app/es"
   }
 }

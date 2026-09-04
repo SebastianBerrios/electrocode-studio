@@ -117,6 +117,7 @@ export type InvitationConfig = {
   meta: {
     title: string;
     description: string;
+    ogImage?: string;
   };
   displayDate: string;
   countdownTarget: string;

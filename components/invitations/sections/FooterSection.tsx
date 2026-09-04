@@ -59,15 +59,16 @@ export function FooterSection() {
 
       <div className="relative bg-band py-6 text-center text-sm text-muted">
         <p>
-          {footer?.credit ?? "ElectroCode Studio"} <span aria-hidden>🧡</span>{" "}
+          De{" "}
           <a
-            href={footer?.creditUrl ?? "https://electrocode.lat"}
+            href={footer?.creditUrl ?? "https://electrocode-studio.vercel.app/es"}
             target="_blank"
             rel="noopener noreferrer"
             className="underline underline-offset-4 transition hover:text-ink"
           >
-            para {couple.first} y {couple.second}
-          </a>
+            {footer?.credit ?? "ElectroCode Studio"}
+          </a>{" "}
+          para {couple.first} y {couple.second}
         </p>
       </div>
     </footer>
