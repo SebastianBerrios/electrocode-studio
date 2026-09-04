@@ -159,7 +159,6 @@
     "title": "Regalos",
     "subtitle": "Hemos elegido la modalidad lluvia de sobres para los regalos. Para mayor comodidad, también dejamos nuestras cuentas:",
     "modalTitle": "Datos Bancarios",
-    "modalIntro": "Hemos elegido la modalidad lluvia de sobres para los regalos, para mayor comodidad también tenemos estas opciones:",
     "accounts": [
       {
         "label": "Cuenta BCP Soles",
@@ -183,11 +182,12 @@
       }
     ]
   },
-  "social": {
+  "sharedAlbum": {
     "title": "Compartimos este día junto a ti",
-    "subtitle": "Comparte tus fotos y momentos usando nuestro hashtag",
-    "hashtag": "#BodaCieloyPiero",
-    "instagramUrl": "https://www.instagram.com/"
+    "subtitle": "Comparte tus fotos y momentos con nosotros",
+    "description": "Sube las fotos y videos que tomes durante la boda a nuestro álbum compartido.",
+    "ctaLabel": "Subir fotos al álbum",
+    "albumUrl": "https://photos.app.goo.gl/wTB6JohoHTdcoz6a8"
   },
   "footer": {
     "credit": "ElectroCode Studio",

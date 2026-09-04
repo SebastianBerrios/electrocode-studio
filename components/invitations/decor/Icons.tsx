@@ -73,11 +73,28 @@ export function MusicIcon(props: IconProps) {
   );
 }
 
+/** Suit and dress on hangers — the dress-code card. */
 export function DressIcon(props: IconProps) {
   return (
     <Svg {...props}>
-      <path d="M32 12a3 3 0 1 0 0 6c-2 0-2 2 0 3l0 3" />
-      <path d="M32 24 20 32l4 4 4-3v17h16V33l4 3 4-4-12-8Z" />
+      {/* Suit / Tuxedo (left) */}
+      <path d="M21 13a2.5 2.5 0 1 0 0 5c-1.5 0-1.5 1.5 0 2.5v2" />
+      <path d="M12 28l9-5.5 9 5.5" />
+      <path d="M13 27.5V49h16V27.5" />
+      <path d="M16.5 25.5L21 34l4.5-8.5" />
+      <path d="M19 24.5h4l-2 1.5 2 1.5h-4l2-1.5Z" />
+      <line x1="15" y1="36" x2="18" y2="36" />
+      <line x1="21" y1="38" x2="21" y2="44" strokeDasharray="0.1 3" />
+
+      {/* Formal Dress (right) */}
+      <path d="M43 13a2.5 2.5 0 1 0 0 5c-1.5 0-1.5 1.5 0 2.5v2" />
+      <path d="M37 25c2 3 6 2 6 2s4 1 6-2l-2 8h-8Z" />
+      <line x1="39" y1="23" x2="38" y2="25" />
+      <line x1="47" y1="23" x2="48" y2="25" />
+      <path d="M39 33l-6 16c4 1 16 1 20 0l-6-16" />
+      <line x1="39" y1="33" x2="47" y2="33" />
+      <path d="M42 35c-1 6-2 10-3 14" />
+      <path d="M44 35c1 6 2 10 3 14" />
     </Svg>
   );
 }

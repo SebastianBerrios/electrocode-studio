@@ -49,6 +49,21 @@ export type PlaylistConfig = {
   spotifyUrl: string;
 };
 
+export type SharedAlbumConfig = {
+  title: string;
+  subtitle: string;
+  description?: string;
+  ctaLabel: string;
+  albumUrl: string;
+};
+
+export type SocialConfig = {
+  title: string;
+  subtitle: string;
+  hashtag?: string;
+  instagramUrl?: string;
+};
+
 export type PartyCardAction = {
   label: string;
   kind?: "song" | "info";
@@ -146,15 +161,11 @@ export type InvitationConfig = {
     title: string;
     subtitle: string;
     modalTitle: string;
-    modalIntro: string;
+    modalIntro?: string;
     accounts: GiftAccount[];
   };
-  social: {
-    title: string;
-    subtitle: string;
-    hashtag: string;
-    instagramUrl: string;
-  };
+  social?: SocialConfig;
+  sharedAlbum?: SharedAlbumConfig;
   footer: {
     credit: string;
     creditUrl: string;

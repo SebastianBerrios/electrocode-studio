@@ -14,6 +14,7 @@ import { PartySection } from "./sections/PartySection";
 import { PlaylistSection } from "./sections/PlaylistSection";
 import { GiftsSection } from "./sections/GiftsSection";
 import { SocialSection } from "./sections/SocialSection";
+import { SharedAlbumSection } from "./sections/SharedAlbumSection";
 import { FooterSection } from "./sections/FooterSection";
 import "./styles/invitation.css";
 import { useEffect } from "react";
@@ -41,7 +42,7 @@ export function InvitationView({ invitation }: { invitation: InvitationConfig })
               <PartySection />
               <PlaylistSection />
               <GiftsSection />
-              <SocialSection />
+              {invitation.sharedAlbum ? <SharedAlbumSection /> : <SocialSection />}
             </main>
 
             <FooterSection />

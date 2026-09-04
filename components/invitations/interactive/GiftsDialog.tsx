@@ -42,9 +42,11 @@ export function GiftsDialog({ open, onClose }: { open: boolean; onClose: () => v
 
   return (
     <Modal open={open} onClose={onClose} title={invitation.gifts.modalTitle}>
-      <p className="text-center text-base text-muted">{invitation.gifts.modalIntro}</p>
+      {invitation.gifts.modalIntro && (
+        <p className="mb-6 text-center text-base text-muted">{invitation.gifts.modalIntro}</p>
+      )}
 
-      <div className="mt-6 space-y-4">
+      <div className="space-y-4">
         {invitation.gifts.accounts.map((account) => (
           <div key={account.label} className="rounded-xl bg-band px-5 py-5 text-center">
             <p className="text-sm font-bold tracking-wide text-muted uppercase">
