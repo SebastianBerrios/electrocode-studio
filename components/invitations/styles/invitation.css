@@ -171,6 +171,21 @@
   color: var(--color-on-brand);
 }
 
+/*
+ * On the dark olive band the default pill ground is the same colour as the
+ * section — swap to an outline so it's visible.
+ */
+.invitation-wrapper .bg-band-alt .pill {
+  background: transparent;
+  color: #fef9f0;
+  border: 1px solid color-mix(in srgb, #bcb096 55%, transparent);
+}
+
+.invitation-wrapper .bg-band-alt .pill:hover {
+  background: #fef9f0;
+  color: #575531;
+}
+
 .invitation-wrapper .panel {
   background: var(--color-card);
   border-radius: 1rem;
