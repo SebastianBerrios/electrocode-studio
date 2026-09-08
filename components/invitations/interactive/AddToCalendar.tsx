@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { EventBlock } from "@/lib/clients/types";
-import { downloadIcs, googleCalendarUrl, outlookCalendarUrl } from "../lib/calendar";
+import { downloadIcs, googleCalendarUrl } from "../lib/calendar";
 
 export function AddToCalendar({
   event,
@@ -37,12 +37,6 @@ export function AddToCalendar({
       href: "#",
       isExternal: false,
       onClick: handleAppleClick,
-    },
-    {
-      label: "Outlook",
-      href: outlookCalendarUrl(event.calendar, location),
-      isExternal: true,
-      onClick: () => setOpen(false),
     },
   ];
 

@@ -11,6 +11,7 @@ const QUICK_LINK = "text-base text-accent transition hover:text-on-brand";
 export function FooterSection() {
   const invitation = useInvitation();
   const { couple, tagline, events, footer } = invitation;
+  const sharedAlbum = invitation.sharedAlbum;
 
   return (
     <footer className="papered relative overflow-hidden bg-band-alt">
@@ -42,10 +43,20 @@ export function FooterSection() {
               Sugerir canción
             </DialogTrigger>
           )}
+          {sharedAlbum?.albumUrl && (
+            <a
+              href={sharedAlbum.albumUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={QUICK_LINK}
+            >
+              Álbum de la Boda
+            </a>
+          )}
           {events && events.length > 0 && (
             <AddToCalendar
               event={events[0]}
-              label="Agendar matrimonio"
+              label="Agregar Boda al Calendario"
               className={QUICK_LINK}
             />
           )}
