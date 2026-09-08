@@ -30,7 +30,8 @@ function CopyButton({
           () => setCopied(false),
         );
       }}
-      className={`rounded-md bg-brand px-4 py-3 text-xs sm:text-sm font-bold tracking-wide text-on-brand uppercase transition hover:opacity-90 ${className}`}
+      className={`rounded-md px-4 py-3 text-xs sm:text-sm font-bold tracking-wide uppercase transition hover:opacity-90 ${className}`}
+      style={{ background: "#575531", color: "#fef9f0" }}
     >
       {copied ? "¡Copiado!" : label}
     </button>
@@ -43,16 +44,16 @@ export function GiftsDialog({ open, onClose }: { open: boolean; onClose: () => v
   return (
     <Modal open={open} onClose={onClose} title={invitation.gifts.modalTitle}>
       {invitation.gifts.modalIntro && (
-        <p className="mb-6 text-center text-base text-muted">{invitation.gifts.modalIntro}</p>
+        <p className="mb-6 text-center text-base" style={{ color: "#575531" }}>{invitation.gifts.modalIntro}</p>
       )}
 
       <div className="space-y-4">
         {invitation.gifts.accounts.map((account) => (
-          <div key={account.label} className="rounded-xl bg-band px-5 py-5 text-center">
-            <p className="text-sm font-bold tracking-wide text-muted uppercase">
+          <div key={account.label} className="rounded-xl px-5 py-5 text-center" style={{ background: "#f7efdd" }}>
+            <p className="text-sm font-bold tracking-wide uppercase" style={{ color: "#575531" }}>
               {account.label}
             </p>
-            <div className="mt-2 space-y-1 text-base text-ink">
+            <div className="mt-2 space-y-1 text-base" style={{ color: "#0f1015" }}>
               {account.lines.map((line) => (
                 <p key={line}>{line}</p>
               ))}
